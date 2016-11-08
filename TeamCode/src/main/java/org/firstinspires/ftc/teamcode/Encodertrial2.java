@@ -20,11 +20,12 @@ public class Encodertrial2 extends LinearHardwareMap {
     public float Linearlasterror;
     @Override
     public void runOpMode() throws InterruptedException {
-        FrontLeft   =hardwareMap.dcMotor.get(frontLeftMotor);
-        FrontRight  =hardwareMap.dcMotor.get(frontRightMotor);
-        BackLeft    =hardwareMap.dcMotor.get(backLeftMotor);
-        BackRight   =hardwareMap.dcMotor.get(backRightMotor);
-        Gyro        =hardwareMap.gyroSensor.get(gyroSensor);
+        FrontLeft           =hardwareMap.dcMotor.get(frontLeftMotor);
+        FrontRight          =hardwareMap.dcMotor.get(frontRightMotor);
+        BackLeft            =hardwareMap.dcMotor.get(backLeftMotor);
+        BackRight           =hardwareMap.dcMotor.get(backRightMotor);
+        Gyro                =hardwareMap.gyroSensor.get(gyroSensor);
+        BeaconColorSensor   =hardwareMap.ColorSensor.get(beaconColorSensor);
 
         FrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         //FrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -33,7 +34,18 @@ public class Encodertrial2 extends LinearHardwareMap {
         SetMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Gyro.calibrate();
 
-        while(Gyro.isCalibrating() && opModeIsActive()){
+        /*while(!Gyro.isCalibrating() && opModeIsActive()){
+            SetMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            telemetry.addData(">","Calibrating Gyro");
+            telemetry.update();
+            idle();
+            sleep(50);
+            telemetry.addData(">", "Ready!");
+            telemetry.addData(">", "Hey Jason, Try not to Fuck up");
+            telemetry.update();*/
+        }
+        waitForStart();
+        while(!Gyro.isCalibrating() && opModeIsActive()){
             SetMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             telemetry.addData(">","Calibrating Gyro");
             telemetry.update();
@@ -43,7 +55,6 @@ public class Encodertrial2 extends LinearHardwareMap {
             telemetry.addData(">", "Hey Jason, Try not to Fuck up");
             telemetry.update();
         }
-        waitForStart();
         Drive(.125,12,0,5,false);
         Drive(.125,24,0,3,false);
         Drive(-.125,-12,0,3,false);
@@ -135,6 +146,13 @@ public class Encodertrial2 extends LinearHardwareMap {
 
         }
         setPower(0,0,0,0);
+    }
+
+    public void pressButton(string TeamColor, double LeftButtonPusherEngagedPosition,double RightButtonPusherEngagedPosition,double LeftButtonPusherStartPosition,double RightButtonPusherStartPosition,){
+    if (BeaconColorSensor.Blue();>BeaconColorSensor.Red()&&BeaconColorSensor.Blue()>BeaconColorSensor.Red()){
+        switch(TeamColor.toLowerCase)
+    }   
+    
     }
 
     public void setPower(double FL,double FR, double BL, double BR){
