@@ -150,7 +150,15 @@ public class Encodertrial2 extends LinearHardwareMap {
 
     public void pressButton(string TeamColor, double LeftButtonPusherEngagedPosition,double RightButtonPusherEngagedPosition,double LeftButtonPusherStartPosition,double RightButtonPusherStartPosition,){
     if (BeaconColorSensor.Blue();>BeaconColorSensor.Red()&&BeaconColorSensor.Blue()>BeaconColorSensor.Red()){
-        switch(TeamColor.toLowerCase)
+        switch(TeamColor.toLowerCase){
+             case "blue":{
+                 if (BeaconColorSensor.blue(){
+                     
+                 }
+             }break;
+             case "red":{
+
+             }break;}
     }   
     
     }
