@@ -16,6 +16,9 @@ import java.util.Set;
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "2", group = "6994 Bot")
 public class Encodertrial2 extends LinearHardwareMap {
+    int InitialTheta=30;
+    double HypotenuseLength=50;
+    double HypotenuseDriveTime=5;
     ElapsedTime runtime= new ElapsedTime();
     public float Linearlasterror;
     @Override
@@ -55,9 +58,16 @@ public class Encodertrial2 extends LinearHardwareMap {
             telemetry.addData(">", "Hey Jason, Try not to Fuck up");
             telemetry.update();
         }
-        Drive(.125,12,0,5,false);
-        Drive(.125,24,0,3,false);
-        Drive(-.125,-12,0,3,false);
+        while (Math.abs(getIntegratedZHeading-InitialTheta)>1){
+        setPower(.125,0,.125,0);
+        } setPower(0,0,0,0); sleep(500);
+        setMaxSpeed(HypotenuseDriveTime/HypotenuseLength)
+        setPower(.5,.5,.,5.,5);
+        sleep(HypotenuseDriveTime);
+        while (Math.abs(getIntegratedZHeading-0)>1){
+        setPower(0,.125,0,.125);
+        }setPower(0,0,0,0); sleep(500);
+    
     }
     
     public void Drive(double minPower, int Distance,int TargetAngle, double TimeOut,boolean PIDdesired){
@@ -176,6 +186,13 @@ public class Encodertrial2 extends LinearHardwareMap {
         BackLeft.setMode(mode);
         BackRight.setMode(mode);
     }
+                     
+    public void setMaxSpeed(int TicksPerSecond){
+    FrontLeft.setMaxSpeed(TicksPerSecond)
+    FrontRight.setMaxSpeed(TicksPerSecond)
+    BackLeft.setMaxSpeed(TicksPerSecond)
+    BackRight.setMaxSpeed(TicksPerSecond)
+    }               
 
     public double PidPowerAdjustment(int TargetAngle){
 
