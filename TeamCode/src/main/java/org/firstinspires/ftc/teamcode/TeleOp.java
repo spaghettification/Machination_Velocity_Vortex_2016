@@ -48,9 +48,10 @@ public class TeleOp extends FTC_6994_Template {
         ButtonPusherRight = hardwareMap.servo.get(buttonPusherRight);
         ButtonPusherLeft.setPosition(buttonPusherLeftStartPositoin);
         ButtonPusherRight.setPosition(buttonPusherRightStartPositoin);
-        BackRightSideRangeSensor= hardwareMap.get(ModernRoboticsI2cRangeSensor.class, backRightSideRangeSensor);
-        BackRightRangeSensor= hardwareMap.get(ModernRoboticsI2cRangeSensor.class, backRightRangeSensor);
-        BackLeftRangeSensor= hardwareMap.get(ModernRoboticsI2cRangeSensor.class, backLeftRangeSensor);
+        WhiteLineFinder=hardwareMap.colorSensor.get(whiteLineFinder);
+        SideRangeSensor= hardwareMap.get(ModernRoboticsI2cRangeSensor.class,sideRangeSensor);
+        FrontRangeSensor= hardwareMap.get(ModernRoboticsI2cRangeSensor.class, frontRangeSensor);
+        BackRangeSensor= hardwareMap.get(ModernRoboticsI2cRangeSensor.class, backRangeSensor);
         BeaconCS=hardwareMap.colorSensor.get(beaconColorSensor);
         beaconColorSensorReturn = null;
 
@@ -97,13 +98,15 @@ public class TeleOp extends FTC_6994_Template {
                  beaconColorSensorReturn=Color.Red;
                 }
             else {beaconColorSensorReturn=Color.Null;}
-
+        telemetry.addData("Red", WhiteLineFinder.red());
+        telemetry.addData("Blue", WhiteLineFinder.blue());
+        telemetry.addData("Green", WhiteLineFinder.green());
+        telemetry.addData("BackRightSide Range",SideRangeSensor.getDistance(DistanceUnit.INCH));
+        telemetry.addData("BackRight Range",FrontRangeSensor.getDistance(DistanceUnit.INCH));
+        telemetry.addData("BackLeft Range",BackRangeSensor.getDistance(DistanceUnit.INCH));
         telemetry.addData("Ball Control Position", BallControl.getPosition());
         telemetry.addData("Catapult Primed", CatapultStop.isPressed());
         telemetry.addData("Gyro", getIntegratedZValue());
-        telemetry.addData("BackRightSide Range",BackRightSideRangeSensor.getDistance(DistanceUnit.INCH));
-        telemetry.addData("BackRight Range",BackRightRangeSensor.getDistance(DistanceUnit.INCH));
-        telemetry.addData("BackLeft Range",BackLeftRangeSensor.getDistance(DistanceUnit.INCH));
         telemetry.addData("ThetaPower Consstant", ThetaPowerConstant);
         telemetry.addData("FrontLeft Power", FrontLeft.getPower());
         telemetry.addData("FrontRight Power", FrontRight.getPower());

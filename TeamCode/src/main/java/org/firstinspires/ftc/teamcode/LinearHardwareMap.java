@@ -14,41 +14,41 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
  * Created by Trevor on 11/5/2016.
  */
 public abstract class LinearHardwareMap extends LinearOpMode {
-    DcMotor                                         FrontLeft;
-    DcMotor                                         FrontRight;
-    DcMotor                                         BackLeft;
-    DcMotor                                         BackRight;
-    DcMotor                                         Catapult;
-    DcMotor                                         BallCollection;
-    DcMotor                                         CapBallLiftLeft;
-    DcMotor                                         CapBallLiftRight;
+   public DcMotor                                         FrontLeft;
+   public DcMotor                                         FrontRight;
+   public DcMotor                                         BackLeft;
+   public DcMotor                                         BackRight;
+   public DcMotor                                         Catapult;
+   public DcMotor                                         BallCollection;
+   public DcMotor                                         CapBallLiftLeft;
+   public DcMotor                                         CapBallLiftRight;
 
-    GyroSensor                                      Gyro;
+   public GyroSensor                                      Gyro;
 
-    ColorSensor                                     BeaconColorSensor;
-    ColorSensor                                     WhiteLineFinder;
+   public ColorSensor                                     BeaconColorSensor;
+   public ColorSensor                                     WhiteLineFinder;
 
-    ModernRoboticsI2cRangeSensor                    BackRightSideRangeSensor;
-    ModernRoboticsI2cRangeSensor                    BackRightRangeSensor;
-    ModernRoboticsI2cRangeSensor                    BackLeftRangeSensor;
+   public ModernRoboticsI2cRangeSensor                    SideRangeSensor;
+   public ModernRoboticsI2cRangeSensor                    FrontRangeSensor;
+   public ModernRoboticsI2cRangeSensor                    BackRangeSensor;
 
-    TouchSensor CatapultStop;
+   public TouchSensor CatapultStop;
 
-    Servo                                           ButtonPusherLeft;
-    Servo                                           ButtonPusherRight;
-    Servo                                           CapBallFork;
+   public Servo                                           ButtonPusherLeft;
+   public Servo                                           ButtonPusherRight;
+   public Servo                                           CapBallFork;
 
-    Servo                                           servo6;
-    Servo                                           servo7;
-    Servo                                           servo8;
-    Servo                                           servo9;
-    Servo                                           servo10;
-    Servo                                           servo11;
-    Servo                                           servo12;
+   public Servo                                           servo6;
+   public Servo                                           servo7;
+   public Servo                                           servo8;
+   public Servo                                           servo9;
+   public Servo                                           servo10;
+   public Servo                                           servo11;
+   public Servo                                           servo12;
 
-    CRServo                                         CapBallarm1;
-    CRServo                                         CapBallarm2;
-    Servo                                           BallControl;
+   public CRServo                                         CapBallarm1;
+   public CRServo                                         CapBallarm2;
+   public Servo                                           BallControl;
 
 
     public String frontLeftMotor                    = "fl";
@@ -62,9 +62,9 @@ public abstract class LinearHardwareMap extends LinearOpMode {
     public String gyroSensor                        = "gyro";
     public String beaconColorSensor                 = "bcs";
     public String whiteLineFinder                   = "wlf";
-    public String backRightSideRangeSensor          = "brsrs";
-    public String backRightRangeSensor              = "brrs";
-    public String backLeftRangeSensor               = "blrs";
+    public String sideRangeSensor                   = "brsrs";
+    public String frontRangeSensor                  = "brrs";
+    public String backRangeSensor                   = "blrs";
     public String catapultStop                      = "cs";
     public String capBallFork                       = "cbf";
     public String capBallarm1                       = "cba1";
