@@ -47,9 +47,10 @@ public class Encodertrial2 extends LinearHardwareMap {
             telemetry.addData(">", "Hey Jason, Try not to Fuck up");
             telemetry.update();*/
         }
-        waitForStart();
-        while(!Gyro.isCalibrating() && opModeIsActive()){
-            SetMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    
+            SetMode(DcMotor.RunMode.RUN_WITHOUT_ENCODERS);
+    while(!Gyro.isCalibrating() && opModeIsActive()){
+            SetMode(DcMotor.RunMode.RUN_WITHOUT_ENCODERS);
             telemetry.addData(">","Calibrating Gyro");
             telemetry.update();
             idle();
@@ -58,14 +59,40 @@ public class Encodertrial2 extends LinearHardwareMap {
             telemetry.addData(">", "Hey Jason, Try not to Fuck up");
             telemetry.update();
         }
+        waitForStart();
+        
         while (Math.abs(getIntegratedZHeading-InitialTheta)>1){
-        setPower(.125,0,.125,0);
-        } setPower(0,0,0,0); sleep(500);
-        setMaxSpeed(HypotenuseDriveTime/HypotenuseLength)
-        setPower(.5,.5,.,5.,5);
-        sleep(HypotenuseDriveTime);
+            telemetry.addData("Gyro",getIntegratedZValue);
+            if (Math.abs(getIntegratesZValue-Initial)>1.25){
+            if (getIntegratedZValue<InitialTheta){
+                setPower(0,.25,0,.25);
+            }
+            if (getIntegratedZValue>InitialTheta){
+                setPower(.25,0,.25,0);
+            }
+                
+            }else {setPower(0,0,0,0);}
+            Telemetry.update();
+        }    setPower(0,0,0,0);
+            SetMode(DcMotor.RunMode.RUN_USING_ENCODERS);sleep(500);
+    
+            setMaxSpeed(HypotenuseDriveTime/HypotenuseLength)
+            setPower(.5,.5,.,5.,5);
+            sleep(HypotenuseDriveTime);
+    
+            SetMode(DcMotor.RunMode.RUN_WITHOUT_ENCODERS);
+            sleep(500);
+    
         while (Math.abs(getIntegratedZHeading-0)>1){
-        setPower(0,.125,0,.125);
+            if (Math.abs(getIntegratesZValue-Initial)>1.25){
+            if (getIntegratedZValue<InitialTheta){
+                setPower(0,.25,0,.25);
+            }
+            if (getIntegratedZValue>InitialTheta){
+                setPower(.25,0,.25,0);
+            }
+                
+            }else {setPower(0,0,0,0);}
         }setPower(0,0,0,0); sleep(500);
     
     }
