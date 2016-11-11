@@ -126,6 +126,8 @@ public class Encodertrial2 extends LinearHardwareMap {
     }
 
     public void TurnWithoutEncoder(double LeftPower, double RightPower, int TargetAngle) {
+
+        SetMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         do {
             setPower(LeftPower, RightPower, LeftPower, RightPower);
         }
@@ -143,6 +145,7 @@ public class Encodertrial2 extends LinearHardwareMap {
 
         }
         setPower(0,0,0,0);
+        sleep(50);
     }
 
     public void DriveWithoutEncoder(int minPower, int AngleToMaintain, boolean StoppingEvent,boolean PIDdesired){
@@ -150,7 +153,7 @@ public class Encodertrial2 extends LinearHardwareMap {
         double FrontRightDynamicPower;
         double BackLeftDynamicPower;
         double BackRightDynamicPower;
-        SetMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        SetMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         runtime.reset();
         sleep(100);
         while (StoppingEvent) {
@@ -179,6 +182,7 @@ public class Encodertrial2 extends LinearHardwareMap {
 
 
         } setPower(0,0,0,0);
+        sleep(50);
     }
 
     public void Drive(double minPower, int Distance, int TargetAngle, double TimeOut, boolean PIDdesired) {
