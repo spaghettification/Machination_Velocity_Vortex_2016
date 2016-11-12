@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -50,6 +51,8 @@ public abstract class LinearHardwareMap extends LinearOpMode {
    public CRServo                                         CapBallarm2;
    public Servo                                           BallControl;
 
+   public DeviceInterfaceModule                           DIM;
+
 
     public String frontLeftMotor                    = "fl";
     public String frontRightMotor                   = "fr";
@@ -80,22 +83,25 @@ public abstract class LinearHardwareMap extends LinearOpMode {
     public double ballControlStartPosition          = 0;
     public double ballControlEngagedPosition        = 1;
 
-    public float LinearproportionalConstant         =0;
-    public float LinearintegralConstant             =0;
-    public float LinearderivitiveConstant           =0;
-    public float AngularproportionalConstant        =0;
-    public float AngularintegralConstant            =0;
-    public float AngularderivitiveConstant          =0;
+    public float LinearproportionalConstant         = 0;
+    public float LinearintegralConstant             = 0;
+    public float LinearderivitiveConstant           = 0;
+    public float AngularproportionalConstant        = 0;
+    public float AngularintegralConstant            = 0;
+    public float AngularderivitiveConstant          = 0;
 
-    public double AndyMarkMotor_TicksPerRevolution  =1120;
+    public double AndyMarkMotor_TicksPerRevolution  = 1120;
     public double CountsPerInch=(AndyMarkMotor_TicksPerRevolution/4*Math.PI);
 
 
-    public float AngularMaxCorrection               =100;
-    public float AngularMinCorrection               =15;
-    public float LinearMaxCorrection                =100;
-    public float LinearMinCorrection                =15;
+    public float AngularMaxCorrection               = 100;
+    public float AngularMinCorrection               = 15;
+    public float LinearMaxCorrection                = 100;
+    public float LinearMinCorrection                = 15;
 
+    public String Dim                               = "DeviceInterfaceModule1";
+
+    String VuforiaLicenseKey = "AbkJpf//////AAAAGfwmmKkkGUDwrRcXe4puyLQhZ3m1wmsmuJUw2GVDtb7tWinUTnSd+UmyGz5aylC8ShWX8ayvA9h2mDtWnM1s3yni7S/WtH8buZO7gUBz9FotxNPJGL8Di9VJSmOhzEoyHLivQpx/vPwoH0Aejcvr1lBt8b5yMEgegLQ+WbmwNmj25ciaaMFDhryp7CTOzZFswvIUdhZ84PBJJew94ewMFjrsGNqra+0beno8wvEH9XmHp2kj9lVT+u8EjZdSQuEowkS5Lw2bnmOCMfPk9/00KZ+xBfaa2LDB3IXuYR2FVdd6qORTWXA8N120mYbCx8x8U7R4JdZs/eAH279CtHqFyFPdQtj3qn3Of7Z3urbcezNu";
 
     public int getIntegratedZValue() {// Fixes the problematic wrap around from 0 to 359.
         int heading = Gyro.getHeading();

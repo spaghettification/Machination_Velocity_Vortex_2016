@@ -1,9 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -25,8 +29,10 @@ public class Encodertrial2 extends LinearHardwareMap {
     ElapsedTime runtime = new ElapsedTime();
     public float Linearlasterror;
 
+
     @Override
     public void runOpMode() throws InterruptedException {
+        DIM = hardwareMap.deviceInterfaceModule.get(Dim);
         FrontLeft = hardwareMap.dcMotor.get(frontLeftMotor);
         FrontRight = hardwareMap.dcMotor.get(frontRightMotor);
         BackLeft = hardwareMap.dcMotor.get(backLeftMotor);
@@ -41,7 +47,6 @@ public class Encodertrial2 extends LinearHardwareMap {
         FrontRangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, frontRangeSensor);
         BackRangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, backRangeSensor);
 
-
         FrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         //FrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         BackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -50,15 +55,6 @@ public class Encodertrial2 extends LinearHardwareMap {
         Gyro.calibrate();
         runtime.reset();
 
-        /*while(!Gyro.isCalibrating() && opModeIsActive()){
-            SetMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            telemetry.addData(">","Calibrating Gyro");
-            telemetry.update();
-            idle();
-            sleep(50);
-            telemetry.addData(">", "Ready!");
-            telemetry.addData(">", "Hey Jason, Try not to Fuck up");
-            telemetry.update();}*/
         while (Gyro.isCalibrating() && opModeIsActive()) {
             telemetry.addData(">", "Calibrating Gyro");
             telemetry.update();
@@ -68,54 +64,30 @@ public class Encodertrial2 extends LinearHardwareMap {
             telemetry.addData(">", "Hey Jason, Try not to Fuck up");
             telemetry.update();
         }
+
         waitForStart();
 
         sleep(500);
         while (opModeIsActive()) {
-            do {
-                setPower(0, .25, 0, .25);
-            }
-            while (Math.abs(getIntegratedZValue() - InitialTheta) > 1);
-            {
-                if (Math.abs(getIntegratedZValue() - InitialTheta) < 1.25) {
-                    if (getIntegratedZValue() > InitialTheta) {
-                        setPower(0, .25, 0, .25);
-                    } else if (getIntegratedZValue() < InitialTheta) {
-                        setPower(0, .25, 0, .25);
-                    } else {
-                        setPower(0, .25, 0, .25);
-                    }
-                } else setPower(0, 0, 0, 0);
-
-            }
-            setPower(0, 0, 0, 0);
-
+            TurnWithoutEncoder(0, .25, InitialTheta);
             runtime.reset();
-            sleep(500);
-            do {
-                setPower(.25, .25, .25, .25);
-            }
-            while (runtime.seconds() > HypotenuseDriveTime);
-            {
-                SetPowerwithPIDAdjustment(.25, InitialTheta, true);
-
-            }
-            sleep(500);
-            do {
-                setPower(.25, 0, .25, 0);
-            }
-            while (Math.abs(getIntegratedZValue() - 0) > 1);
-            {
-                if (Math.abs(getIntegratedZValue() - 0) < 1.25) {
-                    setPower(0, .25, 0, .25);
-                } else setPower(0, 0, 0, 0);
-            }
-            setPower(0, 0, 0, 0);
-            sleep(500);
-            while (!WhiteLineFound()) {
-                sleep(50);
-            }
-            pressButton("Blue", 1, 0, .8, .3);
+            sleep(50);
+            DriveWithoutEncoder(.375, InitialTheta, runtime.seconds() < HypotenuseDriveTime, false);
+            runtime.reset();
+            sleep(50);
+            TurnWithoutEncoder(.25, 0, 0);
+            runtime.reset();
+            sleep(50);
+            DriveWithoutEncoder(.375, 0, !WhiteLineFound(), false);
+            runtime.reset();
+            sleep(50);
+            pressButton("blue", 0, 1, .3, .8);
+            sleep(50);
+            runtime.reset();
+            DriveWithoutEncoder(.375, 0, runtime.seconds() < 1, false);
+            runtime.reset();
+            DriveWithoutEncoder(.375, 0, !WhiteLineFound(), false);
+            pressButton("blue", 0, 1, .3, .8);
         }
     }
 
@@ -129,9 +101,20 @@ public class Encodertrial2 extends LinearHardwareMap {
 
         SetMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         do {
-            setPower(LeftPower, RightPower, LeftPower, RightPower);
+            if (Math.abs(getIntegratedZValue() - TargetAngle) < 1.25) {
+                if (getIntegratedZValue() > TargetAngle) {
+                    setPower(LeftPower, RightPower, LeftPower, RightPower);
+                } else if (getIntegratedZValue() < TargetAngle) {
+                    setPower(LeftPower, RightPower, LeftPower, RightPower);
+                } else {
+                    setPower(LeftPower, RightPower, LeftPower, RightPower);
+                }
+            } else {
+                setPower(0, 0, 0, 0);
+            }
+
         }
-        while (Math.abs(getIntegratedZValue() - TargetAngle) > 1);
+        while (Math.abs(getIntegratedZValue() - TargetAngle) > 1 && opModeIsActive());
         {
             if (Math.abs(getIntegratedZValue() - TargetAngle) < 1.25) {
                 if (getIntegratedZValue() > TargetAngle) {
@@ -141,14 +124,16 @@ public class Encodertrial2 extends LinearHardwareMap {
                 } else {
                     setPower(LeftPower, RightPower, LeftPower, RightPower);
                 }
-            } else {setPower(0,0,0,0);}
+            } else {
+                setPower(0, 0, 0, 0);
+            }
 
         }
-        setPower(0,0,0,0);
+        setPower(0, 0, 0, 0);
         sleep(50);
     }
 
-    public void DriveWithoutEncoder(int minPower, int AngleToMaintain, boolean StoppingEvent,boolean PIDdesired){
+    public void DriveWithoutEncoder(double minPower, int AngleToMaintain, boolean StoppingEvent, boolean PIDdesired) {
         double FrontLeftDynamicPower;
         double FrontRightDynamicPower;
         double BackLeftDynamicPower;
@@ -157,31 +142,31 @@ public class Encodertrial2 extends LinearHardwareMap {
         runtime.reset();
         sleep(100);
         while (StoppingEvent) {
-                if (getIntegratedZValue() > AngleToMaintain && PIDdesired) {//VeeringRight
+            if (getIntegratedZValue() > AngleToMaintain && PIDdesired) {//VeeringRight
 
-                    FrontLeftDynamicPower = Range.clip(minPower - PidPowerAdjustment(AngleToMaintain), 0, 1);
-                    FrontRightDynamicPower = Range.clip(minPower + PidPowerAdjustment(AngleToMaintain), 0, 1);
-                    BackLeftDynamicPower = Range.clip(minPower - PidPowerAdjustment(AngleToMaintain), 0, 1);
-                    BackRightDynamicPower = Range.clip(minPower + PidPowerAdjustment(AngleToMaintain), 0, 1);
+                FrontLeftDynamicPower = Range.clip(minPower - PidPowerAdjustment(AngleToMaintain), 0, 1);
+                FrontRightDynamicPower = Range.clip(minPower + PidPowerAdjustment(AngleToMaintain), 0, 1);
+                BackLeftDynamicPower = Range.clip(minPower - PidPowerAdjustment(AngleToMaintain), 0, 1);
+                BackRightDynamicPower = Range.clip(minPower + PidPowerAdjustment(AngleToMaintain), 0, 1);
 
-                } else if (getIntegratedZValue() < AngleToMaintain && PIDdesired) {//VeeringLeft
+            } else if (getIntegratedZValue() < AngleToMaintain && PIDdesired) {//VeeringLeft
 
-                    FrontLeftDynamicPower = Range.clip(minPower + PidPowerAdjustment(AngleToMaintain), 0, 1);
-                    FrontRightDynamicPower = Range.clip(minPower - PidPowerAdjustment(AngleToMaintain), 0, 1);
-                    BackLeftDynamicPower = Range.clip(minPower + PidPowerAdjustment(AngleToMaintain), 0, 1);
-                    BackRightDynamicPower = Range.clip(minPower - PidPowerAdjustment(AngleToMaintain), 0, 1);
-                } else {
+                FrontLeftDynamicPower = Range.clip(minPower + PidPowerAdjustment(AngleToMaintain), 0, 1);
+                FrontRightDynamicPower = Range.clip(minPower - PidPowerAdjustment(AngleToMaintain), 0, 1);
+                BackLeftDynamicPower = Range.clip(minPower + PidPowerAdjustment(AngleToMaintain), 0, 1);
+                BackRightDynamicPower = Range.clip(minPower - PidPowerAdjustment(AngleToMaintain), 0, 1);
+            } else {
 
-                    FrontLeftDynamicPower = Range.clip(minPower, 0, 1);
-                    FrontRightDynamicPower = Range.clip(minPower, 0, 1);
-                    BackLeftDynamicPower = Range.clip(minPower, 0, 1);
-                    BackRightDynamicPower = Range.clip(minPower, 0, 1);
-                }
-            setPower(FrontLeftDynamicPower,FrontRightDynamicPower,BackLeftDynamicPower,BackRightDynamicPower);
+                FrontLeftDynamicPower = Range.clip(minPower, 0, 1);
+                FrontRightDynamicPower = Range.clip(minPower, 0, 1);
+                BackLeftDynamicPower = Range.clip(minPower, 0, 1);
+                BackRightDynamicPower = Range.clip(minPower, 0, 1);
+            }
+            setPower(FrontLeftDynamicPower, FrontRightDynamicPower, BackLeftDynamicPower, BackRightDynamicPower);
 
 
-
-        } setPower(0,0,0,0);
+        }
+        setPower(0, 0, 0, 0);
         sleep(50);
     }
 
@@ -271,6 +256,10 @@ public class Encodertrial2 extends LinearHardwareMap {
             setPower(0, 0, 0, 0);
         }
         do {
+            setPower(FrontLeftTurnPower, FrontRightTurnPower, BackLeftTurnPower, BackRightTurnPower);
+            idle();
+            telemetry.addData(">", "Turning!");
+            sleep(50);
 
         }
         while (Math.abs(getIntegratedZValue() - TargetAngle) > 1.25);
@@ -400,4 +389,85 @@ public class Encodertrial2 extends LinearHardwareMap {
         }
         return heading;
     }
+
 }
+
+class MRI_Gyro_Vid4_Turn extends LinearOpMode {   //Linear op mode is being used so the program does not get stuck in loop()
+    private ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime timer = new ElapsedTime();
+
+    DcMotor MLeft;  //Left Drive Motor
+    DcMotor MRight;  //Right Drive Motor
+
+    int zAccumulated;  //Total rotation left/right
+    int target = 0;  //Desired angle to turn to
+
+    GyroSensor sensorGyro;  //General Gyro Sensor allows us to point to the sensor in the configuration file.
+    ModernRoboticsI2cGyro mrGyro;  //ModernRoboticsI2cGyro allows us to .getIntegratedZValue()
+
+    @Override
+    public void runOpMode() {
+        telemetry.addData("Status", "Initialized");
+
+        MLeft = hardwareMap.dcMotor.get("ml");  //Config File
+        MRight = hardwareMap.dcMotor.get("mr");
+        MRight.setDirection(DcMotor.Direction.REVERSE);  //This robot has two gears between motors and wheels. If your robot does not, you will need to reverse only the opposite motor
+
+        MLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);  //Controls the speed of the motors to be consistent even at different battery levels
+        MRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        sensorGyro = hardwareMap.gyroSensor.get("gyro");  //Point to the gyro in the configuration file
+        mrGyro = (ModernRoboticsI2cGyro) sensorGyro;      //ModernRoboticsI2cGyro allows us to .getIntegratedZValue()
+        mrGyro.calibrate();  //Calibrate the sensor so it knows where 0 is and what still is. DO NOT MOVE SENSOR WHILE BLUE LIGHT IS SOLID
+
+        waitForStart();
+        runtime.reset();
+
+        while (mrGyro.isCalibrating()) { //Ensure calibration is complete (usually 2 seconds)
+        }
+
+        while(opModeIsActive()){
+            telemetry.addData("Status", "Running: " + runtime.toString());
+
+            if (gamepad1.a)
+                target = target + 45;
+            if (gamepad1.b)
+                target = target - 45;
+
+            turnAbsolute(target);
+        }
+    }
+
+    //This function turns a number of degrees compared to where the robot is. Positive numbers trn left.
+    public void turn(int target) throws InterruptedException {
+        turnAbsolute(target + mrGyro.getIntegratedZValue());
+    }
+
+    //This function turns a number of degrees compared to where the robot was when the program started. Positive numbers trn left.
+    public void turnAbsolute(int target) {
+        zAccumulated = mrGyro.getIntegratedZValue();  //Set variables to gyro readings
+        double turnSpeed = 0.15;
+
+        while (Math.abs(zAccumulated - target) > 3 && opModeIsActive()) {  //Continue while the robot direction is further than three degrees from the target
+            if (zAccumulated > target) {  //if gyro is positive, we will turn right
+                MLeft.setPower(turnSpeed);
+                MRight.setPower(-turnSpeed);
+            }
+
+            if (zAccumulated < target) {  //if gyro is positive, we will turn left
+                MLeft.setPower(-turnSpeed);
+                MRight.setPower(turnSpeed);
+            }
+
+            zAccumulated = mrGyro.getIntegratedZValue();  //Set variables to gyro readings
+            telemetry.addData("accu", String.format("%03d", zAccumulated));
+            telemetry.update();
+        }
+
+        MLeft.setPower(0);  //Stop the motors
+        MRight.setPower(0);
+
+    }
+
+}
+
