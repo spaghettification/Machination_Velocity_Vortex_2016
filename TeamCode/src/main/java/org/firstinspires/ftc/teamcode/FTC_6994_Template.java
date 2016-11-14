@@ -5,6 +5,7 @@ import android.widget.SeekBar;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -16,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 /**
  * Created by Admin on 8/14/2016.
  */
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Template", group = "6994 Bot")
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Template", group = "6994 Bot")@Disabled
 public class FTC_6994_Template extends HardwareMap{
 
     public final static int Encoder_CPR = 1440;

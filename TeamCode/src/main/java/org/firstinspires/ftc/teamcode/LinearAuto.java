@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import android.graphics.Path;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -15,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 /**
  * Created by Trevor on 10/23/2016.
  */
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "LinearAuto", group = "6994 Bot")
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "LinearAuto", group = "6994 Bot")@Disabled
 public class LinearAuto extends LinearOpMode {
     DcMotor FrontLeft;
     DcMotor FrontRight;

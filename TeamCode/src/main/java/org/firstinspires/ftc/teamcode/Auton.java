@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -16,6 +17,7 @@ import java.util.List;
  * Created by Trevor on 10/26/2016.
  */
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "EncoderTest2", group = "6994 Bot")
+@Disabled
 
 public class Auton extends LinearHardwareMap {
     int i;

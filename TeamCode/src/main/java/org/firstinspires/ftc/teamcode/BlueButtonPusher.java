@@ -1,7 +1,9 @@
+/*
 package org.firstinspires.ftc.teamcode;
 
 import android.os.Environment;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -19,11 +21,13 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+*/
 /**
  * Created by Trevor on 10/26/2016.
- */
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "BlueButtonPusher", group = "6994 Bot")
+ *//*
 
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "BlueButtonPusher", group = "6994 Bot")
+@Disabled
 public class BlueButtonPusher extends LinearHardwareMap {
     private ElapsedTime runtime=new ElapsedTime();
     public double Distance_From_Wall=47;
@@ -180,12 +184,14 @@ public class BlueButtonPusher extends LinearHardwareMap {
                         telemetry.update();
                         //Add Data to the text document already formatted and ready to be converted to CSV then imported to excel.*
 
-                        /*GyroTracker.print(getIntegratedZValue()+",");
+                        */
+/*GyroTracker.print(getIntegratedZValue()+",");
                         GyroTracker.print(LinearproportionalCorrection+",");
                         GyroTracker.print(LinearintegralCorrection+",");
                         GyroTracker.print(Linearderivitivecorrection+",");
                         GyroTracker.print(runtime.seconds()+",");
-                        GyroTracker. println();*/
+                        GyroTracker. println();*//*
+
                     }
                     FrontLeft.setPower(0);
                     FrontRight.setPower(0);
@@ -260,3 +266,4 @@ public class BlueButtonPusher extends LinearHardwareMap {
         }
     }
 }
+*/

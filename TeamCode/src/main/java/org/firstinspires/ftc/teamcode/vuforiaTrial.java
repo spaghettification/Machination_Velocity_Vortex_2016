@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode;
 
 import android.provider.OpenableColumns;
@@ -11,9 +12,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * Created by Trevor on 11/11/2016.
  */
+
 public class vuforiaTrial extends LinearHardwareMap {
     OpenGLMatrix lastLocation=null;
     VuforiaLocalizer vuforia;
@@ -40,3 +43,4 @@ public class vuforiaTrial extends LinearHardwareMap {
 
     }
 }
+

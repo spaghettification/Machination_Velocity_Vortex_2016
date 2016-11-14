@@ -21,6 +21,7 @@ public class TeleOp extends FTC_6994_Template {
     enum Color{Red,Blue,Null}
     Color beaconColorSensorReturn;
 
+
     @Override
     public void init() {
         FrontLeft = hardwareMap.dcMotor.get(frontLeftMotor);
@@ -64,32 +65,46 @@ public class TeleOp extends FTC_6994_Template {
 
     @Override
     public void loop() {
+        BallCollection.setPower(-scaleInput(gamepad2.right_stick_y));
+            if (gamepad1.left_bumper){
+                FrontLeft.setPower(scaleInput(-gamepad1.left_stick_y)/2);
+                FrontRight.setPower(scaleInput(gamepad1.right_stick_y)/2);
+                BackLeft.setPower(scaleInput(-gamepad1.left_stick_y)/2);
+                BackRight.setPower(scaleInput(gamepad1.right_stick_y)/2);}
+            else{
+                FrontLeft.setPower(scaleInput(-gamepad1.left_stick_y));
+                FrontRight.setPower(scaleInput(gamepad1.right_stick_y));
+                BackLeft.setPower(scaleInput(-gamepad1.left_stick_y));
+                BackRight.setPower(scaleInput(gamepad1.right_stick_y));}
 
-            FrontLeft.setPower(scaleInput(-gamepad1.left_stick_y));
-            FrontRight.setPower(scaleInput(gamepad1.right_stick_y));
-            BackLeft.setPower(scaleInput(-gamepad1.left_stick_y));
-            BackRight.setPower(scaleInput(gamepad1.right_stick_y));
-            BallCollection.setPower(Range.clip(gamepad1.right_stick_x,-1,1));
-            Catapult.setPower(Range.clip(gamepad1.left_stick_x,0,1));
-            CapBallLiftRight.setPower(Range.clip(scaleInput(gamepad2.left_stick_y),-1,1)*.8);
-            CapBallLiftLeft.setPower(Range.clip(scaleInput(gamepad2.left_stick_y),-1,1));
-            if (gamepad2.a){CapBallarm1.setPower(1);}
+            if (CatapultStop.isPressed()){
+                if (gamepad2.dpad_up){Catapult.setPower(1);}
+                else {Catapult.setPower(0);}}
+
+            else{
+                if (gamepad2.dpad_down){Catapult.setPower(1);}
+            else {Catapult.setPower(0);}
+            }
+            //Catapult.setPower(Range.clip(gamepad2.left_stick_x,0,1));
+            //CapBallLiftRight.setPower(Range.clip(scaleInput(gamepad2.left_stick_y),-1,1)*.8);
+            //CapBallLiftLeft.setPower(Range.clip(scaleInput(gamepad2.left_stick_y),-1,1));
+            /*if (gamepad2.a){CapBallarm1.setPower(1);}
                 else if (gamepad2.b){CapBallarm1.setPower(1); CapBallarm1.setDirection(DcMotorSimple.Direction.REVERSE);}
                     else CapBallarm1.setPower(.5);
 
             if (gamepad2.x){CapBallarm2.setPower(1);}
                 else if (gamepad2.y){CapBallarm2.setPower(1); CapBallarm2.setDirection(DcMotorSimple.Direction.REVERSE);}
-                    else CapBallarm2.setPower(.5);
+                    else CapBallarm2.setPower(.5);*/
 
-            if (gamepad1.dpad_up){BallControl.setPosition(ballControlEngagedPosition);}
+            if (gamepad1.left_bumper){BallControl.setPosition(ballControlEngagedPosition);}
 
-            if (gamepad1.dpad_down){BallControl.setPosition(ballControlStartPosition);}
+            if (gamepad1.right_bumper){BallControl.setPosition(ballControlStartPosition);}
 
-            if (gamepad1.left_bumper){ButtonPusherLeft.setPosition(buttonPusherLeftEngagedPositoin);}
+            /*if (gamepad1.left_bumper){ButtonPusherLeft.setPosition(buttonPusherLeftEngagedPositoin);}
                 else ButtonPusherLeft.setPosition(buttonPusherLeftStartPositoin);
 
             if (gamepad1.right_bumper){ButtonPusherRight.setPosition(buttonPusherRightEngagedPositoin);}
-                else ButtonPusherRight.setPosition(buttonPusherRightStartPositoin);
+                else ButtonPusherRight.setPosition(buttonPusherRightStartPositoin);*/
 
             if (BeaconCS.blue()>BeaconCS.red()&&BeaconCS.blue()>BeaconCS.green()){
                  beaconColorSensorReturn=Color.Blue;

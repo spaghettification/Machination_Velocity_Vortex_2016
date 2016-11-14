@@ -68,7 +68,7 @@ public abstract class HardwareMap extends OpMode {
     public String capBallFork                       = "cbf";
     public String capBallarm1                       = "cba1";
     public String capBallarm2                       = "cba2";
-    public String ballControll                      = "bc";
+    public String ballControll                      = "ballc";
     public String buttonPusherLeft                  = "bpl";
     public String buttonPusherRight                 = "bpr";
 

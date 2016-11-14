@@ -1,12 +1,16 @@
+/*
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+*/
 /**
  * Created by Trevor on 11/6/2016.
- */
+ *//*
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Shooter", group = "6994 Bot")
+
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Shooter", group = "6994 Bot")@Disabled
 public class Shooter extends LinearHardwareMap {
 
     @Override
@@ -44,3 +48,4 @@ public class Shooter extends LinearHardwareMap {
 
     }
 }
+*/

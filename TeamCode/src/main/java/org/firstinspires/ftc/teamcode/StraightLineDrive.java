@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 
 /**
  * Created by Trevor on 10/16/2016.
  */
-@Autonomous(name = "LineDrive", group = "6994")
+@Autonomous(name = "LineDrive", group = "6994")@Disabled
 public class StraightLineDrive extends FTC_6994_Template {
     public final PathSeg[] GyroTest = {new PathSeg(.25, 0, 24, FTC_6994_Template.DriveStyle.Linear)};
     public final PathSeg[] Return = {new PathSeg(.25, 180, 0, DriveStyle.Clockwise), new PathSeg(.25, 180, 24, DriveStyle.Linear), new PathSeg(.25, 0, 0, DriveStyle.Clockwise),};

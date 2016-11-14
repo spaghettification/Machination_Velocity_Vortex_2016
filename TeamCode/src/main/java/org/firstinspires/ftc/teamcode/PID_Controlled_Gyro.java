@@ -1,7 +1,9 @@
+/*
 package org.firstinspires.ftc.teamcode;
 
 import android.os.Environment;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -18,10 +20,12 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+*/
 /**
  * Created by Trevor on 10/26/2016.
- */
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "PID Test", group = "6994 Bot")
+ *//*
+
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "PID Test", group = "6994 Bot")@Disabled
 
 public class PID_Controlled_Gyro extends LinearHardwareMap {
     PrintWriter GyroTracker = null;
@@ -169,12 +173,14 @@ public class PID_Controlled_Gyro extends LinearHardwareMap {
                         Report = getIntegratedZValue()+","+LinearproportionalCorrection+","+LinearintegralConstant+","+Linearderivitivecorrection+","+runtime.seconds();
                             list.add(Report);
 
-                        /*GyroTracker.print(getIntegratedZValue()+",");
+                        */
+/*GyroTracker.print(getIntegratedZValue()+",");
                         GyroTracker.print(LinearproportionalCorrection+",");
                         GyroTracker.print(LinearintegralCorrection+",");
                         GyroTracker.print(Linearderivitivecorrection+",");
                         GyroTracker.print(runtime.seconds()+",");
-                        GyroTracker. println();*/
+                        GyroTracker. println();*//*
+
                     }
                     FrontLeft.setPower(0);
                     FrontRight.setPower(0);
@@ -263,3 +269,4 @@ public class PID_Controlled_Gyro extends LinearHardwareMap {
         }
     }
 }
+*/
