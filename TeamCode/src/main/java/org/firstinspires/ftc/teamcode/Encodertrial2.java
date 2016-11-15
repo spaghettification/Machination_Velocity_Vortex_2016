@@ -57,7 +57,6 @@ public class EncoderTrial2 extends LinearHardwareMap {
         //FrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         BackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         //BackRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        BeaconColorSensor.enableLed(false);
         Gyro.calibrate();
         runtime.reset();
         sleep(2000);
@@ -73,7 +72,6 @@ public class EncoderTrial2 extends LinearHardwareMap {
         }*/
 
         waitForStart();
-            while(opModeIsActive()) {
 
 
                 if (gamepad1.a && gamepad1.right_bumper){
@@ -197,6 +195,12 @@ public class EncoderTrial2 extends LinearHardwareMap {
                 else if (gamepad2.dpad_right){
                     DriveWithoutEncoder(minPower,getIntegratedZValue(),runtime.seconds()<5.5,false);
                 }
+                if (gamepad1.start){
+                    TurnWithoutEncoder(LeftPower,RightPower,getIntegratedZValue()+5,5);
+                }
+                if (gamepad1.back){
+                    TurnWithoutEncoder(LeftPower,RightPower,getIntegratedZValue()-5,5);
+                }
                 else{setPower(0,0,0,0);}
                 telemetry.addData("Heading", getIntegratedZValue());
                 telemetry.addData("LeftPower", LeftPower);
@@ -223,7 +227,7 @@ public class EncoderTrial2 extends LinearHardwareMap {
             sleep(50);
             sleep(50);
             runtime.reset();
-    */}
+    */
 
 
     public boolean WhiteLineFound() {

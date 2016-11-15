@@ -112,7 +112,7 @@ public abstract class LinearHardwareMap extends LinearOpMode {
     public float AngularMaxCorrection               = 100;
     public float AngularMinCorrection               = 15;
     public float LinearMaxCorrection                = 100;
-    public float LinearMinCorrection                = 15;
+    public float LinearMinCorrection                = 15;/*
 
     public String Dim                               = "DeviceInterfaceModule1";
 
@@ -136,14 +136,14 @@ public abstract class LinearHardwareMap extends LinearOpMode {
     public OpenGLMatrix phoneLocation;
 
     float mmPerInch        = 25.4f;
-
+*/
     public int getIntegratedZValue() {// Fixes the problematic wrap around from 0 to 359.
         int heading = Gyro.getHeading();
         if (heading > 180) {
             heading -= 360;
         }
         return heading;
-    }
+    }/*
 
     public void InitializeVuforia(){
         parameters=new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
@@ -243,7 +243,7 @@ public abstract class LinearHardwareMap extends LinearOpMode {
     }
     public String formatMatrix(OpenGLMatrix matrix){
         return matrix.formatAsTransform();
-    }
+    }*/
 
 
 
