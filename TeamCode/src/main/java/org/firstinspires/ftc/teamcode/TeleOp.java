@@ -67,15 +67,15 @@ public class TeleOp extends FTC_6994_Template {
     public void loop() {
         BallCollection.setPower(-scaleInput(gamepad2.right_stick_y));
             if (gamepad1.left_bumper){
-                FrontLeft.setPower(scaleInput(-gamepad1.left_stick_y/2));
-                FrontRight.setPower(scaleInput(gamepad1.right_stick_y/2));
-                BackLeft.setPower(scaleInput(-gamepad1.left_stick_y/2));
-                BackRight.setPower(scaleInput(gamepad1.right_stick_y/2));}
+                FrontLeft.setPower(scaleInput(gamepad1.left_stick_y/2));
+                FrontRight.setPower(scaleInput(-gamepad1.right_stick_y/2));
+                BackLeft.setPower(scaleInput(gamepad1.left_stick_y/2));
+                BackRight.setPower(scaleInput(-gamepad1.right_stick_y/2));}
             else{
-                FrontLeft.setPower(scaleInput(-gamepad1.left_stick_y));
-                FrontRight.setPower(scaleInput(gamepad1.right_stick_y));
-                BackLeft.setPower(scaleInput(-gamepad1.left_stick_y));
-                BackRight.setPower(scaleInput(gamepad1.right_stick_y));}
+                FrontLeft.setPower(scaleInput(gamepad1.left_stick_y));
+                FrontRight.setPower(scaleInput(-gamepad1.right_stick_y));
+                BackLeft.setPower(scaleInput(gamepad1.left_stick_y));
+                BackRight.setPower(scaleInput(-gamepad1.right_stick_y));}
 
             if (CatapultStop.isPressed()){
                 if (gamepad2.dpad_up){Catapult.setPower(1);}
