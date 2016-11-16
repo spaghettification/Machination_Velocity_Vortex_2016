@@ -1,5 +1,4 @@
-package com.qualcomm.ftcrobotcontroller.opmodes;
-
+package org.firstinspires.ftc.teamcode;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 
@@ -13,9 +12,9 @@ import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-public class BLUE_B_AUTONOMOUS extends OpMode {
-    UltrasonicSensor Sonic;
-    ColorSensor FrontCS;
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Please Work", group = "6994 Bot")
+public class BlueButtonPusher extends HardwareMap {
+
     private enum State {
         STATE_INITIAL,
         STATE_DRIVE_TO_BEACON,
@@ -27,30 +26,18 @@ public class BLUE_B_AUTONOMOUS extends OpMode {
         stop,
     }
 
-    double A = .8;
-
-    private final PathSeg[] mBeaconPath = {
-            new PathSeg(.5, 0, 24, DriveStyle.Linear),
-            new PathSeg(.25, 0, 12, DriveStyle.Linear),
-            new PathSeg(.125, 0, 6, DriveStyle.Linear),
-            new PathSeg(.2, -45, 0, DriveStyle.CounterClockwise),
-            new PathSeg(.5, 0, 16, DriveStyle.Linear),
-            new PathSeg(.25, 0, 8, DriveStyle.Linear),
-            new PathSeg(.125, 0, 4, DriveStyle.Linear),/*
-            new PathSeg(.2, 0, 6, DriveStyle.Linear),
+    private final BlueButtonPusherPathSeg[] mBeaconPath = {
+            new BlueButtonPusherPathSeg(.5, 0, 24, DriveStyle.Linear),
+            new BlueButtonPusherPathSeg(.25, 90, 0, DriveStyle.Clockwise),
+            new BlueButtonPusherPathSeg(.125, 0, 0, DriveStyle.CounterClockwise),
+            //new BlueButtonPusherPathSeg(.2, -45, 0, DriveStyle.CounterClockwise),
+            /*new PathSeg(.2, 0, 6, DriveStyle.Linear),
             new PathSeg(.2, -90, 0, DriveStyle.Clockwise),
             new PathSeg(.2, 0, 6, DriveStyle.Linear),
             new PathSeg(.2, 0, 0, DriveStyle.CounterClockwise),
             new PathSeg(.2, 0, -6, DriveStyle.Linear),*/
 
     };
-
-
-    private GyroSensor Gyro;
-    private DcMotor FrontLeft;
-    private DcMotor FrontRight;
-    private DcMotor BackLeft;
-    private DcMotor BackRight;
     private int FrontLeftEncoderTarget;
     private int BackLeftEncoderTarget;
     private int FrontRightEncoderTarget;
@@ -64,37 +51,30 @@ public class BLUE_B_AUTONOMOUS extends OpMode {
     private final ElapsedTime mRuntime = new ElapsedTime();
     private final ElapsedTime mStateTime = new ElapsedTime();
     private State mCurrentState;
-    private PathSeg[] mCurrentPath;
+    private BlueButtonPusherPathSeg[] mCurrentPath;
     private int mCurrentSeg;
-    public DriveStyle mdirection;
-    public double UltrasonicTarget;
     enum DriveStyle {Linear, Clockwise, CounterClockwise, UltraSonic}
-
     public enum Color {Red,Blue,Green}
     public Color color;
-    //enum DriveStyle {Mechanum, TankDrive, OneJoystickDrive}
-
     private DriveStyle mDirection;
-    public BLUE_B_AUTONOMOUS() {
+    public BlueButtonPusher() {
     }
 
     @Override
     public void init() {
         // Initialize class members.
-        Gyro = hardwareMap.gyroSensor.get("Gyro");
-        FrontLeft = hardwareMap.dcMotor.get("FL");
-        FrontRight = hardwareMap.dcMotor.get("FR");
-        BackLeft = hardwareMap.dcMotor.get("BL");
-        BackRight = hardwareMap.dcMotor.get("BR");
+        Gyro = hardwareMap.gyroSensor.get(gyroSensor);
+        FrontLeft = hardwareMap.dcMotor.get(frontLeftMotor);
+        FrontRight = hardwareMap.dcMotor.get(frontRightMotor);
+        BackLeft = hardwareMap.dcMotor.get(backLeftMotor);
+        BackRight = hardwareMap.dcMotor.get(backRightMotor);
         FrontRight.setDirection(DcMotor.Direction.REVERSE);
         BackRight.setDirection(DcMotor.Direction.REVERSE);
-        Sonic  = hardwareMap.ultrasonicSensor.get("Sonic");
-        FrontCS = hardwareMap.colorSensor.get("FCS");
+
         setDrivePower(0, 0, 0, 0);
         calibrate();
 
-        FrontCS.enableLed(true);
-        resetDriveEncoders();
+        initialize();
     }
 
     public void init_loop() {
@@ -107,7 +87,7 @@ public class BLUE_B_AUTONOMOUS extends OpMode {
         runToPosition();
         mRuntime.reset();
         newState(State.STATE_INITIAL);
-        initialize();
+
 
 
     }
@@ -122,12 +102,11 @@ public class BLUE_B_AUTONOMOUS extends OpMode {
         telemetry.addData("turnComplete", turnComplete());
         telemetry.addData("MoveComplete", MoveComplete());
         telemetry.addData("Direction", mDirection);
-        telemetry.addData("US", Sonic.getUltrasonicLevel());
 
         switch (mCurrentState) {
 
             case STATE_INITIAL:
-                if (encodersAtZero() && !Gyro.isCalibrating() && FrontRed()) {
+                if (encodersAtZero() && !Gyro.isCalibrating() ) {
                     startPath(mBeaconPath);
                     newState(State.STATE_DRIVE_TO_BEACON);
                     //
@@ -163,39 +142,6 @@ public class BLUE_B_AUTONOMOUS extends OpMode {
         mStateTime.reset();
         mCurrentState = newState;
     }
-    public boolean FrontRed(){
-        return ((FrontCS.red()>FrontCS.blue()) && (FrontCS.red()>FrontCS.green()));
-    }
-    public boolean FrontBlue(){
-        return ((FrontCS.blue()>FrontCS.red()) && (FrontCS.blue()>FrontCS.green()));
-    }
-    public boolean FrontGreen(){
-        return ((FrontCS.green()>FrontCS.blue()) && (FrontCS.green()>FrontCS.red()));
-    }
-    public void DriveUntil(Color mcolor, double Power){
-        switch (mcolor){
-            case Red: {
-                setDrivePower(Power,Power,Power,Power);
-                if (FrontRed()){setDrivePower(0,0,0,0);}
-            }
-            case Blue: {
-                setDrivePower(Power,Power,Power,Power);
-                if (FrontBlue()){setDrivePower(0,0,0,0);}
-            }
-            case Green: {
-                setDrivePower(Power,Power,Power,Power);
-                if (FrontGreen()){setDrivePower(0,0,0,0);}
-            }
-
-
-        }
-
-    }
-    public void DriveUntilUltraSonicTargetHit(double Power, int Target){
-     SetUltrasonicTarget(Target);
-     setDrivePower(Power,Power,Power,Power);
-     if (UltrasonicTargetHit()){setDrivePower(0,0,0,0);}
-    }
 
     private int getFrontLeftPosition() {
         return FrontLeft.getCurrentPosition();
@@ -213,7 +159,7 @@ public class BLUE_B_AUTONOMOUS extends OpMode {
         return BackRight.getCurrentPosition();
     }
 
-    private int getIntegratedZValue() {// Fixes the problematic wrap around from 0 to 359.
+    public int getIntegratedZValue() {// Fixes the problematic wrap around from 0 to 359.
         int heading = Gyro.getHeading();
         if (heading > 180) {
             heading -= 360;
@@ -242,19 +188,6 @@ public class BLUE_B_AUTONOMOUS extends OpMode {
         BackRight.setTargetPosition(BackRightEncoderTarget += BackrightEncoder);
 
     }
-
-    public void SetUltrasonicTarget(double Distance){
-        UltrasonicTarget = Distance;
-    }
-
-    public void InitializeUltrasonicLevel(){
-        UltrasonicTarget = Sonic.getUltrasonicLevel();
-    }
-
-    public boolean UltraSonicTargetHit( int Target){
-        return (UltrasonicTarget<Target);
-    }
-
     private void syncHeading() {// initalize heading for access through out the class
         Heading = getIntegratedZValue();
     }
@@ -273,10 +206,8 @@ public class BLUE_B_AUTONOMOUS extends OpMode {
 
     public void initialize(){
         initializeDirection();
-        InitializeUltrasonicLevel();
-        syncEncoders();
         syncHeading();
-        runToPosition();
+        resetDriveEncoders();
     }
 
     public void calibrate(){
@@ -309,21 +240,21 @@ public class BLUE_B_AUTONOMOUS extends OpMode {
     }
 
     private void runToPosition() {
-        setDriveMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     private void useConstantSpeed() {
-        setDriveMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    private void useConstantPower() {setDriveMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);}
+    private void useConstantPower() {setDriveMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);}
 
     private void resetDriveEncoders() {
         setEncoderTarget(0, 0, 0, 0);
-        setDriveMode(DcMotorController.RunMode.RESET_ENCODERS);
+        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
-    private void setDriveMode(DcMotorController.RunMode mode) {// Ensure that motor drive mode is the correct moce and if not set the drive mode to the correct mode.
+    private void setDriveMode(DcMotor.RunMode mode) {// Ensure that motor drive mode is the correct moce and if not set the drive mode to the correct mode.
         if (FrontLeft.getMode() != mode)
             FrontLeft.setMode(mode);
 
@@ -340,7 +271,7 @@ public class BLUE_B_AUTONOMOUS extends OpMode {
         return ((Math.abs(getFrontLeftPosition()) < 5) && (Math.abs(getFrontRightPosition()) < 5) && (Math.abs(getBackLeftPosition()) < 5) && (Math.abs(getBackRightPosition()) < 5));
     }
 
-    private void EncoderStop() {// Stop encoders wehn sensor has been activated and target position has been set to an unreachable number.
+    private void EncoderStop() {// Stop encoders when sensor has been activated and target position has been set to an unreachable number.
         FrontLeft.setTargetPosition(FrontLeft.getCurrentPosition());
         FrontRight.setTargetPosition(FrontRight.getCurrentPosition());
         BackLeft.setTargetPosition(BackLeft.getCurrentPosition());
@@ -381,13 +312,7 @@ public class BLUE_B_AUTONOMOUS extends OpMode {
 
             }
             break;
-           /* case UltraSonic:{
-                setTargetHeading(TargetAngle);
-                setDrivePower(power,power,power,power);
-                SetUltrasonicTarget(Distance);
-                if (Sonic.getUltrasonicLevel()<UltrasonicTarget){EncoderStop(); syncEncoders();}
-                else {addEncoderTarget(100000,100000,100000,100000);}
-            }*/
+
         }
     }
 
@@ -403,14 +328,8 @@ public class BLUE_B_AUTONOMOUS extends OpMode {
         return ((!FrontLeft.isBusy() && !FrontRight.isBusy() && !BackLeft.isBusy() && !BackRight.isBusy()) && (mDirection == DriveStyle.Linear));
     }
 
-    private boolean UltrasonicTargetHit(){
-        if ((Sonic.getUltrasonicLevel()<UltrasonicTarget)&&mDirection == DriveStyle.UltraSonic){
-            EncoderStop();
-            syncEncoders();}
-        return ((Sonic.getUltrasonicLevel()<UltrasonicTarget)&&mDirection == DriveStyle.UltraSonic);
-        }
 
-    private void startPath(PathSeg[] path) {
+    private void startPath(BlueButtonPusherPathSeg[] path) {
         mCurrentPath = path;
         mCurrentSeg = 0;
         initialize();
@@ -428,7 +347,7 @@ public class BLUE_B_AUTONOMOUS extends OpMode {
 
     private boolean pathComplete() {
 
-        if (MoveComplete() || turnComplete() || UltrasonicTargetHit()) {
+        if (MoveComplete() || turnComplete()) {
 
 
             if (mCurrentSeg < mCurrentPath.length) {
@@ -448,13 +367,13 @@ public class BLUE_B_AUTONOMOUS extends OpMode {
     }
 }
 
-class PathSeg {
+class BlueButtonPusherPathSeg {
     double mpower;
     int mtargetangle;
     double mdistance;
-    BLUE_B_AUTONOMOUS.DriveStyle mdirection;
+    BlueButtonPusher.DriveStyle mdirection;
 
-    public PathSeg(double Power, int TargetAngle, double Distance, BLUE_B_AUTONOMOUS.DriveStyle direction) {
+    public BlueButtonPusherPathSeg(double Power, int TargetAngle, double Distance, BlueButtonPusher.DriveStyle direction) {
         mpower = Power;
         mtargetangle = TargetAngle;
         mdistance = Distance;
