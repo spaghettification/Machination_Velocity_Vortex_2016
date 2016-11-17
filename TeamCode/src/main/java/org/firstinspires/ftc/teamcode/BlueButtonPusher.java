@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode;
+
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 
@@ -53,10 +54,14 @@ public class BlueButtonPusher extends HardwareMap {
     private State mCurrentState;
     private BlueButtonPusherPathSeg[] mCurrentPath;
     private int mCurrentSeg;
+
     enum DriveStyle {Linear, Clockwise, CounterClockwise, UltraSonic}
-    public enum Color {Red,Blue,Green}
+
+    public enum Color {Red, Blue, Green}
+
     public Color color;
     private DriveStyle mDirection;
+
     public BlueButtonPusher() {
     }
 
@@ -72,7 +77,7 @@ public class BlueButtonPusher extends HardwareMap {
         BackRight.setDirection(DcMotor.Direction.REVERSE);
 
         setDrivePower(0, 0, 0, 0);
-        calibrate();
+        Gyro.calibrate();
 
         initialize();
     }
@@ -84,10 +89,8 @@ public class BlueButtonPusher extends HardwareMap {
     @Override
     public void start() {
         setDriveSpeed(0, 0, 0, 0);
-        runToPosition();
         mRuntime.reset();
         newState(State.STATE_INITIAL);
-
 
 
     }
@@ -106,17 +109,22 @@ public class BlueButtonPusher extends HardwareMap {
         switch (mCurrentState) {
 
             case STATE_INITIAL:
-                if (encodersAtZero() && !Gyro.isCalibrating() ) {
+                if (encodersAtZero() && !Gyro.isCalibrating()) {
                     startPath(mBeaconPath);
                     newState(State.STATE_DRIVE_TO_BEACON);
+                }
+
+
+
                     //
                     // Climber.setPosition(.8);
-                }
+
                 break;
-            case STATE_DRIVE_TO_BEACON:
-                if (pathComplete()) {
-                    newState(State.STATE_DRIVE_TO_MOUNTAIN);
-                }
+            case STATE_DRIVE_TO_BEACON:if (pathComplete()) {
+
+                newState(State.STATE_DRIVE_TO_MOUNTAIN);
+            }
+
                 break;
             case STATE_DRIVE_TO_MOUNTAIN:
 
@@ -188,6 +196,7 @@ public class BlueButtonPusher extends HardwareMap {
         BackRight.setTargetPosition(BackRightEncoderTarget += BackrightEncoder);
 
     }
+
     private void syncHeading() {// initalize heading for access through out the class
         Heading = getIntegratedZValue();
     }
@@ -204,13 +213,13 @@ public class BlueButtonPusher extends HardwareMap {
         mDirection = DriveStyle.Linear;
     }
 
-    public void initialize(){
+    public void initialize() {
         initializeDirection();
         syncHeading();
         resetDriveEncoders();
     }
 
-    public void calibrate(){
+    public void calibrate() {
         resetDriveEncoders();
         Gyro.calibrate();
 
@@ -223,12 +232,12 @@ public class BlueButtonPusher extends HardwareMap {
         BackRight.setPower(Range.clip(Backrightpower, -1, 1));
     }
 
-    private void setDriveSpeed(double Frontleft, double Frontright, double Backleft, double Backright) { 
+    private void setDriveSpeed(double Frontleft, double Frontright, double Backleft, double Backright) {
         setDrivePower(Frontleft, Frontright, Backleft, Backright);
     }
 
     private void PowerWithAngularAdjustment(double Power, double TargetAngle) {// Uses the gyro to drive straight
-        double difference = (Math.abs(TargetAngle- Gyro.getHeading()));
+        double difference = (Math.abs(TargetAngle - Gyro.getHeading()));
         double Adjustment = 1.02 * difference;
         if (getIntegratedZValue() - TargetAngle < -1) {
             setDrivePower(Power / Adjustment, Power * Adjustment, Power / Adjustment, Power * Adjustment);
@@ -247,7 +256,9 @@ public class BlueButtonPusher extends HardwareMap {
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    private void useConstantPower() {setDriveMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);}
+    private void useConstantPower() {
+        setDriveMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
 
     private void resetDriveEncoders() {
         setEncoderTarget(0, 0, 0, 0);
@@ -284,7 +295,7 @@ public class BlueButtonPusher extends HardwareMap {
         switch (mDirection) {
             case Linear: {
                 int counts = (int) (Distance * CountsPerInch);
-                setDrivePower(Power,Power,Power,Power);
+                setDrivePower(Power, Power, Power, Power);
                 addEncoderTarget(counts, counts, counts, counts);
                 setTargetHeading(TargetAngle);
 
@@ -352,6 +363,7 @@ public class BlueButtonPusher extends HardwareMap {
 
             if (mCurrentSeg < mCurrentPath.length) {
                 startSeg();
+                runToPosition();
             } else {
                 mCurrentPath = null;
                 mCurrentSeg = 0;

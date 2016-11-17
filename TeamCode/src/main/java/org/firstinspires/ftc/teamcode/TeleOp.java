@@ -54,8 +54,8 @@ public class TeleOp extends FTC_6994_Template {
     @Override
     public void loop() {
         BallCollection.setPower(-scaleInput(gamepad2.right_stick_y));
-        float LeftPower = gamepad1.left_stick_y;
-        float RightPower = -gamepad1.right_stick_y;
+        float LeftPower = gamepad1.right_stick_y;
+        float RightPower = -gamepad1.left_stick_y;
             if (gamepad1.left_bumper){
                 FrontLeft.setPower(Range.clip(scaleInput(LeftPower)/2,-.5,.5));
                 FrontRight.setPower(Range.clip(scaleInput(RightPower)/2,-.5,.5));
@@ -75,6 +75,10 @@ public class TeleOp extends FTC_6994_Template {
                 if (gamepad2.dpad_down){Catapult.setPower(1);}
             else {Catapult.setPower(0);}
             }
+        if (gamepad2.left_bumper){
+            Catapult.setPower(gamepad2.right_stick_y);
+            BallCollection.setPower(scaleInput(gamepad2.right_stick_y));
+        }
 
 
             if (gamepad2.left_bumper){BallControl.setPosition(ballControlEngagedPosition);}
