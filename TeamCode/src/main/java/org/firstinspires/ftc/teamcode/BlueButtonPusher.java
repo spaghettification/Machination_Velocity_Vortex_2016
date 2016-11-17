@@ -16,21 +16,13 @@ import com.qualcomm.robotcore.util.Range;
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Please Work", group = "6994 Bot")
 public class BlueButtonPusher extends HardwareMap {
 
-    private enum State {
-        STATE_INITIAL,
-        STATE_DRIVE_TO_BEACON,
-        STATE_FOLLOW_LINE,
-        STATE_SQUARE_TO_WALL,
-        STATE_DEPLOY_CLIMBERS,
-        STATE_DRIVE_TO_MOUNTAIN,
-        STATE_CLIMB_MOUNTAIN,
-        stop,
-    }
-
+    private final static int Encoder_CPR = 1120;
+    private final static int WheelDiameter = 4;
+    private final static double Circumference = Math.PI * WheelDiameter;
+    private final static double Rotations = 1 / Circumference;
+    private final static double CountsPerInch = Encoder_CPR * Rotations;
     private final BlueButtonPusherPathSeg[] mBeaconPath = {
             new BlueButtonPusherPathSeg(.5, 0, 24, DriveStyle.Linear),
-            new BlueButtonPusherPathSeg(.25, 90, 0, DriveStyle.Clockwise),
-            new BlueButtonPusherPathSeg(.125, 0, 0, DriveStyle.CounterClockwise),
             //new BlueButtonPusherPathSeg(.2, -45, 0, DriveStyle.CounterClockwise),
             /*new PathSeg(.2, 0, 6, DriveStyle.Linear),
             new PathSeg(.2, -90, 0, DriveStyle.Clockwise),
@@ -39,27 +31,17 @@ public class BlueButtonPusher extends HardwareMap {
             new PathSeg(.2, 0, -6, DriveStyle.Linear),*/
 
     };
+    private final ElapsedTime mRuntime = new ElapsedTime();
+    private final ElapsedTime mStateTime = new ElapsedTime();
+    public Color color;
     private int FrontLeftEncoderTarget;
     private int BackLeftEncoderTarget;
     private int FrontRightEncoderTarget;
     private int BackRightEncoderTarget;
     private int Heading;
-    private final static int Encoder_CPR = 1440;
-    private final static int WheelDiameter = 4;
-    private final static double Circumference = Math.PI * WheelDiameter;
-    private final static double Rotations = 1 / Circumference;
-    private final static double CountsPerInch = Encoder_CPR * Rotations;
-    private final ElapsedTime mRuntime = new ElapsedTime();
-    private final ElapsedTime mStateTime = new ElapsedTime();
     private State mCurrentState;
     private BlueButtonPusherPathSeg[] mCurrentPath;
     private int mCurrentSeg;
-
-    enum DriveStyle {Linear, Clockwise, CounterClockwise, UltraSonic}
-
-    public enum Color {Red, Blue, Green}
-
-    public Color color;
     private DriveStyle mDirection;
 
     public BlueButtonPusher() {
@@ -73,11 +55,12 @@ public class BlueButtonPusher extends HardwareMap {
         FrontRight = hardwareMap.dcMotor.get(frontRightMotor);
         BackLeft = hardwareMap.dcMotor.get(backLeftMotor);
         BackRight = hardwareMap.dcMotor.get(backRightMotor);
+
+        Catapult = hardwareMap.dcMotor.get(catapult);
         FrontRight.setDirection(DcMotor.Direction.REVERSE);
         BackRight.setDirection(DcMotor.Direction.REVERSE);
 
         setDrivePower(0, 0, 0, 0);
-        Gyro.calibrate();
 
         initialize();
     }
@@ -90,6 +73,7 @@ public class BlueButtonPusher extends HardwareMap {
     public void start() {
         setDriveSpeed(0, 0, 0, 0);
         mRuntime.reset();
+        resetDriveEncoders();
         newState(State.STATE_INITIAL);
 
 
@@ -108,29 +92,24 @@ public class BlueButtonPusher extends HardwareMap {
 
         switch (mCurrentState) {
 
-            case STATE_INITIAL:
+            case STATE_INITIAL:{
                 if (encodersAtZero() && !Gyro.isCalibrating()) {
                     startPath(mBeaconPath);
                     newState(State.STATE_DRIVE_TO_BEACON);
-                }
+                }}
+                break;
+            case STATE_DRIVE_TO_BEACON:{
+                if ((pathComplete())){newState(State.stop);}}
 
-
-
-                    //
-                    // Climber.setPosition(.8);
 
                 break;
-            case STATE_DRIVE_TO_BEACON:if (pathComplete()) {
+            case STATE_DRIVE_TO_MOUNTAIN:{
 
-                newState(State.STATE_DRIVE_TO_MOUNTAIN);
             }
 
                 break;
-            case STATE_DRIVE_TO_MOUNTAIN:
-
-                newState(State.stop);
-                break;
             case stop: {
+                Catapult.setPower(0);
                 useConstantPower();
                 setDrivePower(0, 0, 0, 0);
             }
@@ -138,7 +117,6 @@ public class BlueButtonPusher extends HardwareMap {
 
         }
     }
-
 
     @Override
     public void stop() {
@@ -336,9 +314,13 @@ public class BlueButtonPusher extends HardwareMap {
     }
 
     private boolean MoveComplete() {
-        return ((!FrontLeft.isBusy() && !FrontRight.isBusy() && !BackLeft.isBusy() && !BackRight.isBusy()) && (mDirection == DriveStyle.Linear));
+        return ((Math.abs(FrontLeft.getCurrentPosition()-FrontLeft.getTargetPosition())<5)&&
+                (Math.abs(FrontRight.getCurrentPosition()-FrontRight.getTargetPosition())<5)&&
+                (Math.abs(BackLeft.getCurrentPosition()-BackLeft.getTargetPosition())<5)&&
+                (Math.abs(BackRight.getCurrentPosition()-BackRight.getTargetPosition())<5)&&
+                (mDirection ==DriveStyle.Linear));
+        //return ((!FrontLeft.isBusy() && !FrontRight.isBusy() && !BackLeft.isBusy() && !BackRight.isBusy()) && (mDirection == DriveStyle.Linear));
     }
-
 
     private void startPath(BlueButtonPusherPathSeg[] path) {
         mCurrentPath = path;
@@ -351,7 +333,7 @@ public class BlueButtonPusher extends HardwareMap {
 
         if (mCurrentPath != null) {
             DriveWithEncoder(mCurrentPath[mCurrentSeg].mpower, mCurrentPath[mCurrentSeg].mtargetangle, mCurrentPath[mCurrentSeg].mdistance, mCurrentPath[mCurrentSeg].mdirection);
-
+            runToPosition();
             mCurrentSeg++;
         }
     }
@@ -377,6 +359,22 @@ public class BlueButtonPusher extends HardwareMap {
         }
         return false;
     }
+
+
+    private enum State {
+        STATE_INITIAL,
+        STATE_DRIVE_TO_BEACON,
+        STATE_FOLLOW_LINE,
+        STATE_SQUARE_TO_WALL,
+        STATE_DEPLOY_CLIMBERS,
+        STATE_DRIVE_TO_MOUNTAIN,
+        STATE_CLIMB_MOUNTAIN,
+        stop,
+    }
+
+    enum DriveStyle {Linear, Clockwise, CounterClockwise, UltraSonic}
+
+    public enum Color {Red, Blue, Green}
 }
 
 class BlueButtonPusherPathSeg {

@@ -17,9 +17,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  */
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Teleop", group = "6994 Bot")
 public class TeleOp extends FTC_6994_Template {
-    enum Color{Red,Blue,Null}
-
-
     @Override
     public void init() {
         FrontLeft = hardwareMap.dcMotor.get(frontLeftMotor);
@@ -75,10 +72,10 @@ public class TeleOp extends FTC_6994_Template {
                 if (gamepad2.dpad_down){Catapult.setPower(1);}
             else {Catapult.setPower(0);}
             }
-        if (gamepad2.left_bumper){
+        /*if (gamepad2.left_bumper){
             Catapult.setPower(gamepad2.right_stick_y);
             BallCollection.setPower(scaleInput(gamepad2.right_stick_y));
-        }
+        }*/
 
 
             if (gamepad2.left_bumper){BallControl.setPosition(ballControlEngagedPosition);}
@@ -90,5 +87,7 @@ public class TeleOp extends FTC_6994_Template {
     public void stop() {
         setDrivePower(0, 0, 0, 0);
     }
+
+    enum Color{Red,Blue,Null}
 
 }
