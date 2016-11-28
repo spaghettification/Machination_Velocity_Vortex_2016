@@ -21,13 +21,13 @@ import java.util.Set;
  * Created by Trevor on 11/6/2016.
  */
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Speed Auto Config", group = "6994 Bot")
-public class EncoderTrial2 extends LinearHardwareMap {
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "ShortDistanceWithOUTDriveForward", group = "6994 Bot")
+public class ShortDistanceWithoutDriveForward extends LinearHardwareMap {
+    public float Linearlasterror;
     int InitialTheta = 30;
     double HypotenuseLength = 50;
     double HypotenuseDriveTime = 3;
     ElapsedTime runtime = new ElapsedTime();
-    public float Linearlasterror;
     double LeftPower = 0;
     double RightPower = .25;
     double ReverseLeftPower = .25;
@@ -44,22 +44,30 @@ public class EncoderTrial2 extends LinearHardwareMap {
         BackLeft = hardwareMap.dcMotor.get(backLeftMotor);
         BackRight = hardwareMap.dcMotor.get(backRightMotor);
         Gyro = hardwareMap.gyroSensor.get(gyroSensor);
-        ButtonPusherLeft = hardwareMap.servo.get(buttonPusherLeft);
-        ButtonPusherRight = hardwareMap.servo.get(buttonPusherRight);
+        //ButtonPusherLeft = hardwareMap.servo.get(buttonPusherLeft);
+        //ButtonPusherRight = hardwareMap.servo.get(buttonPusherRight);
         BeaconColorSensor = hardwareMap.colorSensor.get(beaconColorSensor);
         WhiteLineFinder = hardwareMap.colorSensor.get(whiteLineFinder);
         BeaconColorSensor = hardwareMap.colorSensor.get(beaconColorSensor);
+        Catapult = hardwareMap.dcMotor.get(catapult);
+        CatapultStop = hardwareMap.touchSensor.get(catapultStop);
+        BallCollection = hardwareMap.dcMotor.get(ballCollection);
+        BallControl = hardwareMap.servo.get(ballControll);
+        BallControl.setPosition(ballControlStartPosition);
         SideRangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, sideRangeSensor);
         FrontRangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, frontRangeSensor);
         BackRangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, backRangeSensor);
-
-        FrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        //FrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        BackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        //BackRight.setDirection(DcMotorSimple.Direction.REVERSE);
+//
+        //FrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        FrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        //BackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        BackRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        setPower(0,0,0,0);
         Gyro.calibrate();
         runtime.reset();
+        SetMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         sleep(2000);
+
 
         /*while (Gyro.isCalibrating() && opModeIsActive()) {
             telemetry.addData(">", "Calibrating Gyro");
@@ -73,6 +81,46 @@ public class EncoderTrial2 extends LinearHardwareMap {
 
         waitForStart();
 
+        if(opModeIsActive())
+        {
+            BallControl.setPosition(ballControlStartPosition);
+            setPower(.25, .25, .25, .25);
+            sleep(1250);
+            setPower(0, 0, 0, 0);
+            sleep(500);
+            Catapult.setPower(1);
+            sleep(8000);
+            while (!CatapultStop.isPressed()) {
+                Catapult.setPower(1);
+            }
+            Catapult.setPower(0);
+            sleep(2000);
+            BallCollection.setPower(1);
+            sleep(500);
+            BallControl.setPosition(ballControlEngagedPosition);
+            sleep(5000);
+            BallControl.setPosition(ballControlStartPosition);
+            sleep(500);
+            Catapult.setPower(1);
+            BallCollection.setPower(0);
+            sleep(4000);
+            Catapult.setPower(0);
+            setPower(0, 0, 0, 0);
+            setPower(0, 0, 0, 0);
+            Catapult.setPower(0);
+            BallCollection.setPower(0);
+
+        }
+        else
+        {
+            BallControl.setPosition(ballControlStartPosition);
+            BallCollection.setPower(0);
+            setPower(0,0,0,0);
+            Catapult.setPower(0);
+
+        }
+
+/*
 
                 if (gamepad1.a && gamepad1.right_bumper){
                     LeftPower+=.05;
@@ -209,8 +257,9 @@ public class EncoderTrial2 extends LinearHardwareMap {
                 telemetry.addData("ReverseLeftPower",ReverseRightPower);
                 telemetry.addData("minPower",minPower);
                 telemetry.update();
+*/
 
-            }
+    }
 
 
         /*
@@ -237,7 +286,7 @@ public class EncoderTrial2 extends LinearHardwareMap {
 
     public void TurnWithoutEncoder(double LeftPower, double RightPower, int TargetAngle,int Timeout) {
 
-            while (runtime.seconds()<Timeout){
+        while (runtime.seconds()<Timeout){
             if (Math.abs(getIntegratedZValue() - TargetAngle) > 1.25) {
                 if (getIntegratedZValue() > TargetAngle) {
                     setPower(LeftPower, RightPower, LeftPower, RightPower);
@@ -249,15 +298,15 @@ public class EncoderTrial2 extends LinearHardwareMap {
             } else {
                 setPower(0, 0, 0, 0);
             }
-                telemetry.addData(">","Turning");
-                telemetry.addData("LeftPower", LeftPower);
-                telemetry.addData("RightPower", RightPower);
-                telemetry.addData("Gyro Heading", getIntegratedZValue());
-                telemetry.addData("TargetAngle",TargetAngle);
-                telemetry.addData("TimeOut", Timeout);
-                telemetry.addData("RunTime", runtime.seconds());
-                telemetry.update();
-            }
+            telemetry.addData(">","Turning");
+            telemetry.addData("LeftPower", LeftPower);
+            telemetry.addData("RightPower", RightPower);
+            telemetry.addData("Gyro Heading", getIntegratedZValue());
+            telemetry.addData("TargetAngle",TargetAngle);
+            telemetry.addData("TimeOut", Timeout);
+            telemetry.addData("RunTime", runtime.seconds());
+            telemetry.update();
+        }
 
         sleep(50);
     }
@@ -313,59 +362,25 @@ public class EncoderTrial2 extends LinearHardwareMap {
 
         sleep(200);
         //SetMode(DcMotor.RunMode.RUN_TO_POSITION);
-        double EncoderTicks = Distance * 4 * Math.PI / 1120;
+        double EncoderTicks = 89.17*Distance;
         FrontLeft.setTargetPosition((int) (FrontLeft.getCurrentPosition() + EncoderTicks));
         FrontRight.setTargetPosition((int) (FrontRight.getTargetPosition() + EncoderTicks));
         BackLeft.setTargetPosition((int) (BackLeft.getCurrentPosition() + EncoderTicks));
         BackRight.setTargetPosition((int) (BackRight.getTargetPosition() + EncoderTicks));
+        SetMode(DcMotor.RunMode.RUN_TO_POSITION);
         FrontLeft.setPower(minPower);
         FrontRight.setPower(minPower);
         BackLeft.setPower(minPower);
         BackRight.setPower(minPower);
-        SetMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         while ((opModeIsActive() &&
                 FrontLeft.isBusy() &&
-                FrontRight.isBusy() &&
-                BackLeft.isBusy() &&
-                BackRight.isBusy())
-                || (runtime.seconds() < TimeOut &&
-                opModeIsActive())) {
-
-
-        /*while (((Math.abs(FrontLeft.getCurrentPosition())<EncoderTicks&&*//**//*
-                Math.abs(FrontRight.getCurrentPosition())<EncoderTicks&&
-                Math.abs(BackLeft.getCurrentPosition())<EncoderTicks&&
-                Math.abs(BackRight.getCurrentPosition())<EncoderTicks)&&*//**//*
-                opModeIsActive()))||(runtime.seconds()<TimeOut&&opModeIsActive())){
-*/
-            if (getIntegratedZValue() > TargetAngle && PIDdesired) {//VeeringRight
-
-                FrontLeftDynamicPower = Range.clip(minPower - PidPowerAdjustment(AngleToMaintain), 0, 1);
-                FrontRightDynamicPower = Range.clip(minPower + PidPowerAdjustment(AngleToMaintain), 0, 1);
-                BackLeftDynamicPower = Range.clip(minPower - PidPowerAdjustment(AngleToMaintain), 0, 1);
-                BackRightDynamicPower = Range.clip(minPower + PidPowerAdjustment(AngleToMaintain), 0, 1);
-
-            } else if (getIntegratedZValue() < TargetAngle && PIDdesired) {//VeeringLeft
-
-                FrontLeftDynamicPower = Range.clip(minPower + PidPowerAdjustment(AngleToMaintain), 0, 1);
-                FrontRightDynamicPower = Range.clip(minPower - PidPowerAdjustment(AngleToMaintain), 0, 1);
-                BackLeftDynamicPower = Range.clip(minPower + PidPowerAdjustment(AngleToMaintain), 0, 1);
-                BackRightDynamicPower = Range.clip(minPower - PidPowerAdjustment(AngleToMaintain), 0, 1);
-            } else {
-
-                FrontLeftDynamicPower = Range.clip(minPower, 0, 1);
-                FrontRightDynamicPower = Range.clip(minPower, 0, 1);
-                BackLeftDynamicPower = Range.clip(minPower, 0, 1);
-                BackRightDynamicPower = Range.clip(minPower, 0, 1);
-            }
-
-            setPower(FrontLeftDynamicPower, FrontRightDynamicPower, BackLeftDynamicPower, BackRightDynamicPower);
+                FrontRight.isBusy())
+                ) {
             idle();
-            sleep(50);
         }
         setPower(0, 0, 0, 0);
         sleep(300);
-        SetMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void Turn(double Power, int TargetAngle) {
@@ -421,16 +436,16 @@ public class EncoderTrial2 extends LinearHardwareMap {
                     setPower(.125,-.125,.125,-.125);
                 }
                 break;
-                    case "red": {
-                        if (BeaconColorSensor.blue() > BeaconColorSensor.red() && BeaconColorSensor.blue() > BeaconColorSensor.green()) {
-                            setPower(-.125,-.125,-.125,-.125);
-                            sleep(600);
-                            setPower(.125,-.125,.125,-.125);
-                        } else
-                            setPower(-.125,-.125,-.125,-.125);
-                        sleep(1200);
+                case "red": {
+                    if (BeaconColorSensor.blue() > BeaconColorSensor.red() && BeaconColorSensor.blue() > BeaconColorSensor.green()) {
+                        setPower(-.125,-.125,-.125,-.125);
+                        sleep(600);
                         setPower(.125,-.125,.125,-.125);
-                    }
+                    } else
+                        setPower(-.125,-.125,-.125,-.125);
+                    sleep(1200);
+                    setPower(.125,-.125,.125,-.125);
+                }
                 break;
             }
         }
