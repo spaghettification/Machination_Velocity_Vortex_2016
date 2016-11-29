@@ -35,6 +35,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * Created by Trevor on 11/5/2016.
  */
 public abstract class LinearHardwareMap extends LinearOpMode {
+    
     public DcMotor FrontLeft;
     public DcMotor FrontRight;
     public DcMotor BackLeft;
