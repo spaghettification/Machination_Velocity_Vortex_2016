@@ -35,7 +35,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * Created by Trevor on 11/5/2016.
  */
 public abstract class LinearHardwareMap extends LinearOpMode {
-    
+    public double DriveStraightConstant=.8;
     public DcMotor FrontLeft;
     public DcMotor FrontRight;
     public DcMotor BackLeft;
@@ -399,15 +399,19 @@ public abstract class LinearHardwareMap extends LinearOpMode {
     }
 
     public void DriveToWall(int Distance,double Power) {
+SetMode(RUN_USING_ENCODERS);
         while (opModeIsActive()&&!isStopRequested()&&FrontRangeSensor.getDistance(DistanceUnit.INCH) > Distance) {
-            setPower(Power, Power, Power, Power);
+            setPower(Power, Power, Power, Power,DriveStraightConstant);
+            setMaxSpeed(2000,DriveStraightConstant);
         }
-        setPower(0, 0, 0, 0);
+        setPower(0, 0, 0, 0,DriveStraightConstant);
     }
 
     public void FindWhiteLine(OpticalDistanceSensor colorSensor,double Power) {
-        while (opModeIsActive()&&!isStopRequested()&&colorSensor.getLightDetected()>50) {
-            setPower(Power, Power, Power, Power);
+SetMode(RUN_WITH_ENCODER);
+        while (opModeIsActive()&&!isStopRequested()&&colorSensor.getLightDetected()>.21) {
+            setPower(Power, Power, Power, Power,DriveStraightConstant);
+            setMaxSpeed(2000,DriveStraightConstant);
         }
         setPower(0,0,0,0);
     }
