@@ -84,27 +84,33 @@ public class ShortDistanceWithDriveForward extends LinearHardwareMap {
 
         if(opModeIsActive())
          {
-             BallControl.setPosition(ballControlStartPosition);
+             //BallControl.setPosition(ballControlStartPosition);
              setPower(.25, .25, .25, .25);
              sleep(1250);
              setPower(0, 0, 0, 0);
              sleep(500);
-             Catapult.setPower(1);
-             sleep(8000);
-             while (!CatapultStop.isPressed()) {
-                 Catapult.setPower(1);
-             }
+             while(!CatapultStop.isPressed()){Catapult.setPower(1);}Catapult.setPower(0);
+             sleep(1000);
+             while (CatapultStop.isPressed()){Catapult.setPower(1);}Catapult.setPower(0);
+             sleep(1000);
+             while (!CatapultStop.isPressed()) {Catapult.setPower(1);}
              Catapult.setPower(0);
-             sleep(2000);
-             BallCollection.setPower(1);
-             sleep(500);
-             BallControl.setPosition(ballControlEngagedPosition);
+             sleep(1000);
+             BallCollection.setPower(-1);
+             //sleep(500);
+             //BallControl.setPosition(ballControlEngagedPosition);
              sleep(5000);
-             BallControl.setPosition(ballControlStartPosition);
-             sleep(500);
-             Catapult.setPower(1);
+             //BallControl.setPosition(ballControlStartPosition);
+             //sleep(500);
              BallCollection.setPower(0);
-             sleep(4000);
+             while(!CatapultStop.isPressed()){Catapult.setPower(1);}Catapult.setPower(0);
+             sleep(1000);
+             while (CatapultStop.isPressed()){Catapult.setPower(1);}Catapult.setPower(0);
+             sleep(1000);
+             while (!CatapultStop.isPressed()) {Catapult.setPower(1);}
+             //Catapult.setPower(0);
+
+             //sleep(4000);
              Catapult.setPower(0);
              setPower(.5, .5, .25, .25);
              sleep(8000);

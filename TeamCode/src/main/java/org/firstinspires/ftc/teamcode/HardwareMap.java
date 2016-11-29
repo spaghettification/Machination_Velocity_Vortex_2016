@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.GyroSensor;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.Range;
@@ -47,7 +48,7 @@ public abstract class HardwareMap extends OpMode {
         public DcMotor CapBallLiftRight;
         public GyroSensor Gyro;
         public ColorSensor BeaconColorSensor;
-        public ColorSensor WhiteLineFinder;
+        public OpticalDistanceSensor WhiteLineFinder;
         public ModernRoboticsI2cRangeSensor SideRangeSensor;
         public ModernRoboticsI2cRangeSensor FrontRangeSensor;
         public ModernRoboticsI2cRangeSensor BackRangeSensor;
@@ -133,6 +134,7 @@ public abstract class HardwareMap extends OpMode {
     float mmPerInch        = 25.4f;
 */
         String VuforiaLicenseKey = "AbkJpf//////AAAAGfwmmKkkGUDwrRcXe4puyLQhZ3m1wmsmuJUw2GVDtb7tWinUTnSd+UmyGz5aylC8ShWX8ayvA9h2mDtWnM1s3yni7S/WtH8buZO7gUBz9FotxNPJGL8Di9VJSmOhzEoyHLivQpx/vPwoH0Aejcvr1lBt8b5yMEgegLQ+WbmwNmj25ciaaMFDhryp7CTOzZFswvIUdhZ84PBJJew94ewMFjrsGNqra+0beno8wvEH9XmHp2kj9lVT+u8EjZdSQuEowkS5Lw2bnmOCMfPk9/00KZ+xBfaa2LDB3IXuYR2FVdd6qORTWXA8N120mYbCx8x8U7R4JdZs/eAH279CtHqFyFPdQtj3qn3Of7Z3urbcezNu";
+            double CapBallForkStart = 0;
 
     public double PidPowerAdjustment(int TargetAngle) {
 
@@ -237,7 +239,7 @@ public abstract class HardwareMap extends OpMode {
             Gyro = hardwareMap.gyroSensor.get(gyroSensor);
 
             BeaconColorSensor = hardwareMap.colorSensor.get(beaconColorSensor);
-            WhiteLineFinder = hardwareMap.colorSensor.get(whiteLineFinder);
+            WhiteLineFinder = hardwareMap.opticalDistanceSensor.get(whiteLineFinder);
         }
 
         public void InitializeServoPositions() {
@@ -250,6 +252,7 @@ public abstract class HardwareMap extends OpMode {
             if (ButtonPusher != null) {
                 ButtonPusher.setPosition(buttonPusherLeft);
             }
+            if (CapBallFork !=null){CapBallFork.setPosition(CapBallForkStart);}
 
         }
 

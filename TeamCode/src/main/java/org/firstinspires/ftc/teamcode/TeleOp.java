@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Paint;
 import android.widget.Button;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
@@ -8,6 +9,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.GyroSensor;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.Range;
@@ -33,8 +35,8 @@ public class TeleOp extends FTC_6994_Template{
 
         CapBallLiftLeft=hardwareMap.dcMotor.get(capBallLiftLeft);
         CapBallLiftRight=hardwareMap.dcMotor.get(capBallLiftRight);
-        CapBallLiftLeft.setDirection(DcMotorSimple.Direction.REVERSE);/*
-        CapBallFork=hardwareMap.servo.get(capBallFork);
+        CapBallLiftLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        CapBallFork=hardwareMap.servo.get(capBallFork);/*
         CapBallarm1=hardwareMap.crservo.get(capBallarm1);
         CapBallarm2=hardwareMap.crservo.get(capBallarm2);*/
         ButtonPusherArm = hardwareMap.servo.get(buttonPusherArm);
@@ -58,17 +60,26 @@ public class TeleOp extends FTC_6994_Template{
 
     @Override
     public void loop() {
+        if(gamepad1.dpad_up){
+            CapBallFork.setPosition(CapBallFork.getPosition()+.1);}
+        if(gamepad1.dpad_down){
+            CapBallFork.setPosition(CapBallFork.getPosition()-.1);}
+        if(gamepad2.dpad_up){
+            BallControl.setPosition(BallControl.getPosition()+.1);}
+        if(gamepad2.dpad_down){
+            BallControl.setPosition(
+                    BallControl.getPosition()-.1);}
         if (gamepad2.b && !gamepad2.left_bumper){
-            ButtonPusherArm.setPosition(.2);
+            ButtonPusherArm.setPosition(ButtonPusherArm.getPosition()-.1);
         }
         if (gamepad2.x && !gamepad2.left_bumper){
-            ButtonPusherArm.setPosition(.8);
+            ButtonPusherArm.setPosition(ButtonPusherArm.getPosition()+.1);
         }
         if (gamepad2.left_bumper&&gamepad2.b && ButtonPusherArm.getPosition()>.75){
-            ButtonPusher.setPosition(1);
+            ButtonPusher.setPosition(ButtonPusher.getPosition()-.1);
         }
         else if (gamepad2.left_bumper&&gamepad2.x&& ButtonPusherArm.getPosition()>.75){
-            ButtonPusher.setPosition(.4);
+            ButtonPusher.setPosition(ButtonPusher.getPosition()+.1);
         }
         else {ButtonPusher.setPosition(.7);}
         BallCollection.setPower(-scaleInput(gamepad2.right_stick_y));
@@ -107,6 +118,23 @@ public class TeleOp extends FTC_6994_Template{
             Catapult.setPower(1);
         }
 
+        if (gamepad1.b && gamepad1.left_bumper && !gamepad1.x){
+            if (BeaconColorSensor.red()>BeaconColorSensor.blue()){
+                ButtonPusher.setPosition(buttonPusherLeft);
+                ButtonPusherArm.setPosition(buttonPusherEngage);
+            }else {
+                ButtonPusher.setPosition(buttonPusherRight);
+                ButtonPusherArm.setPosition(buttonPusherEngage);}
+        }
+        if (gamepad1.x && gamepad1.left_bumper && !gamepad1.b){
+            if (BeaconColorSensor.blue()>BeaconColorSensor.red()){
+                ButtonPusher.setPosition(buttonPusherLeft);
+                ButtonPusherArm.setPosition(buttonPusherEngage);
+            }else {
+                ButtonPusher.setPosition(buttonPusherRight);
+                ButtonPusherArm.setPosition(buttonPusherEngage);}
+        }
+
 
         /*if (gamepad2.left_bumper){
             Catapult.setPower(gamepad2.right_stick_y);
@@ -120,10 +148,13 @@ public class TeleOp extends FTC_6994_Template{
 
         telemetry.addData("ButtonPusher",ButtonPusher.getPosition());
         telemetry.addData("ButtonPusherArm",ButtonPusherArm.getPosition());
+        telemetry.addData("CapBallFork",CapBallFork.getPosition());
+        telemetry.addData("Ball Control",BallControl.getPosition());
         telemetry.addData("RangeSensor",FrontRangeSensor.getDistance(DistanceUnit.INCH));
-        telemetry.addData("ColorSensor Green",BeaconColorSensor.green());
-        telemetry.addData("ColorSensor Red",BeaconColorSensor.red());
-        telemetry.addData("ColorSensor Blue",BeaconColorSensor.blue());
+        telemetry.addData("BeaconColorSensor Green",BeaconColorSensor.green());
+        telemetry.addData("BeaconColorSensor Red",BeaconColorSensor.red());
+        telemetry.addData("BeaconColorSensor Blue",BeaconColorSensor.blue());
+        telemetry.addData("WhiteLineFinder Light",WhiteLineFinder.getLightDetected());
         telemetry.addData("Gyro",getIntegratedZValue());//
     }
 

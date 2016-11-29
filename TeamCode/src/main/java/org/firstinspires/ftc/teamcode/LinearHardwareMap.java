@@ -11,8 +11,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.I2cAddr;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.util.Range;
 import com.vuforia.HINT;
 import com.vuforia.Vuforia;
 
@@ -41,22 +43,16 @@ public abstract class LinearHardwareMap extends LinearOpMode {
     public DcMotor BallCollection;
     public DcMotor CapBallLiftLeft;
     public DcMotor CapBallLiftRight;
-
     public GyroSensor Gyro;
-
     public ColorSensor BeaconColorSensor;
-    public ColorSensor WhiteLineFinder;
-
+    public OpticalDistanceSensor WhiteLineFinder;
     public ModernRoboticsI2cRangeSensor SideRangeSensor;
     public ModernRoboticsI2cRangeSensor FrontRangeSensor;
     public ModernRoboticsI2cRangeSensor BackRangeSensor;
-
     public TouchSensor CatapultStop;
-
     public Servo ButtonPusherArm;
     public Servo ButtonPusher;
     public Servo CapBallFork;
-
     public Servo servo6;
     public Servo servo7;
     public Servo servo8;
@@ -64,15 +60,10 @@ public abstract class LinearHardwareMap extends LinearOpMode {
     public Servo servo10;
     public Servo servo11;
     public Servo servo12;
-
     public CRServo CapBallarm1;
     public CRServo CapBallarm2;
     public Servo BallControl;
-
-
     public DeviceInterfaceModule DIM;
-
-
     public String frontLeftMotor = "fl"; //VTOJ Port 1
     public String frontRightMotor = "fr"; // VTOJ Port 2
     public String backLeftMotor = "bl"; //VTOL Port 1
@@ -94,25 +85,18 @@ public abstract class LinearHardwareMap extends LinearOpMode {
     public String ballControll = "ballco";
     public String buttonPusher = "bp";
     public String buttonPusherArm = "bpa";
-
-
-
     public double ballControlStartPosition = 1;
     public double ballControlEngagedPosition = 0;
-
     public double buttonPusherStow = 0;
-
     public double buttonPusherEngage = .3;
     public double buttonPusherLeft = 1;
     public double buttonPusherRight = .4;
-
     public float LinearproportionalConstant = 0;
     public float LinearintegralConstant = 0;
     public float LinearderivitiveConstant = 0;
     public float AngularproportionalConstant = 0;
     public float AngularintegralConstant = 0;
     public float AngularderivitiveConstant = 0;
-
     public double AndyMarkMotor_TicksPerRevolution = 1120;
     public double CountsPerInch = 89;
     public float AngularMaxCorrection = 100;
@@ -142,6 +126,7 @@ public abstract class LinearHardwareMap extends LinearOpMode {
 
     float mmPerInch        = 25.4f;
 */
+    double TurningConstant=.0125;
     String VuforiaLicenseKey = "AbkJpf//////AAAAGfwmmKkkGUDwrRcXe4puyLQhZ3m1wmsmuJUw2GVDtb7tWinUTnSd+UmyGz5aylC8ShWX8ayvA9h2mDtWnM1s3yni7S/WtH8buZO7gUBz9FotxNPJGL8Di9VJSmOhzEoyHLivQpx/vPwoH0Aejcvr1lBt8b5yMEgegLQ+WbmwNmj25ciaaMFDhryp7CTOzZFswvIUdhZ84PBJJew94ewMFjrsGNqra+0beno8wvEH9XmHp2kj9lVT+u8EjZdSQuEowkS5Lw2bnmOCMfPk9/00KZ+xBfaa2LDB3IXuYR2FVdd6qORTWXA8N120mYbCx8x8U7R4JdZs/eAH279CtHqFyFPdQtj3qn3Of7Z3urbcezNu";
 
     public int getIntegratedZValue() {// Fixes the problematic wrap around from 0 to 359.
@@ -218,9 +203,8 @@ public abstract class LinearHardwareMap extends LinearOpMode {
         Gyro = hardwareMap.gyroSensor.get(gyroSensor);
 
         BeaconColorSensor = hardwareMap.colorSensor.get(beaconColorSensor);
-        WhiteLineFinder = hardwareMap.colorSensor.get(whiteLineFinder);
-        BeaconColorSensor.setI2cAddress(I2cAddr.create7bit(0x3a));
-        WhiteLineFinder.setI2cAddress(I2cAddr.create7bit(0x3c));
+        WhiteLineFinder = hardwareMap.opticalDistanceSensor.get(whiteLineFinder);
+        BeaconColorSensor.setI2cAddress(I2cAddr.create7bit(0x1e));
         BeaconColorSensor.enableLed(false);
         WhiteLineFinder.enableLed(true);
 
@@ -307,7 +291,32 @@ public abstract class LinearHardwareMap extends LinearOpMode {
         sleep(300);
     }
 
-    public void Turn(double Power, int TargetAngle, boolean Pivot,String Direction) {
+    public void Turn(double LeftPower,double RightPower, int TargetAngle, boolean Pivot){
+        int Start = getIntegratedZValue();
+        double leftpower = LeftPower;
+        double rightpower = RightPower;
+        if (Start<TargetAngle){
+            setPower(LeftPower,-RightPower,LeftPower,-RightPower);
+        }
+        else if (Start>TargetAngle){
+            setPower(-LeftPower,RightPower,-LeftPower,RightPower);
+        }
+        else {setPower(0,0,0,0);}
+
+        while(Math.abs(getIntegratedZValue()-TargetAngle)>3){
+
+            if (getIntegratedZValue()<TargetAngle){
+                setPower(leftpower,-rightpower,leftpower,-rightpower);
+            }
+            else if (getIntegratedZValue()>TargetAngle){
+                setPower(-leftpower,rightpower,-leftpower,rightpower);
+            }
+            else {setPower(0,0,0,0);}
+
+        }setPower(0,0,0,0);
+    }
+
+    public void Turn(double power, int TargetAngle, boolean Pivot,String Direction) {
         double FrontLeftTurnPower = 0;
         double FrontRightTurnPower = 0;
         double BackLeftTurnPower = 0;
@@ -315,21 +324,23 @@ public abstract class LinearHardwareMap extends LinearOpMode {
         SetMode(DcMotor.RunMode.RUN_USING_ENCODER);
         sleep(300);
         setMaxSpeed(2000);
-
+        double Adjustment = TurningConstant*(Math.abs(getIntegratedZValue()-TargetAngle));
+        double Power = power;
         if (Pivot) {
 
                 if (Direction == "clockwise"){
-                    FrontLeftTurnPower = Power;
-                    FrontRightTurnPower =0 ;
-                    BackLeftTurnPower = Power;
-                    BackRightTurnPower =0;
+
+                    FrontLeftTurnPower = 0;
+                    FrontRightTurnPower =Power ;
+                    BackLeftTurnPower = 0;
+                    BackRightTurnPower =Power;
                     }
 
                 if (Direction =="counterclockwise"){
-                    FrontLeftTurnPower = -Power;
-                    FrontRightTurnPower = 0;
-                    BackLeftTurnPower = -Power;
-                    BackRightTurnPower = 0;}
+                    FrontLeftTurnPower = 0;
+                    FrontRightTurnPower = -Power;
+                    BackLeftTurnPower = 0;
+                    BackRightTurnPower = -Power;}
 
 
             }
@@ -393,8 +404,8 @@ public abstract class LinearHardwareMap extends LinearOpMode {
         setPower(0, 0, 0, 0);
     }
 
-    public void FindWhiteLine(ColorSensor colorSensor,double Power) {
-        while (opModeIsActive()&&!isStopRequested()&&colorSensor.red() > 200 && colorSensor.blue() > 200 && colorSensor.green() > 200) {
+    public void FindWhiteLine(OpticalDistanceSensor colorSensor,double Power) {
+        while (opModeIsActive()&&!isStopRequested()&&colorSensor.getLightDetected()>50) {
             setPower(Power, Power, Power, Power);
         }
         setPower(0,0,0,0);

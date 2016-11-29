@@ -15,14 +15,15 @@ public class BlueCloseButtonPusher extends LinearHardwareMap {
         InitializeServoPositions();
         Calibrate();
 
-        waitForStart();while(opModeIsActive()) {
-            while (Gyro.isCalibrating()) {
+        waitForStart();
+        while(opModeIsActive()&&!isStopRequested()) {
+            while (Gyro.isCalibrating()&&FrontLeft.isBusy()&&FrontRight.isBusy()&&BackLeft.isBusy()&&BackRight.isBusy()) {
                 idle();
             }
             Drive(.375, 8, 0, 5, false);
             // shootParticle(1);
-            Turn(.125, 38, false, "clockwise");
-            Drive(.375, 60,getIntegratedZValue(),4, false);
+            Turn(.25, 38, false, "clockwise");
+            Drive(.375, 55,getIntegratedZValue(),4, false);
             sleep(1000);
             FindWhiteLine(WhiteLineFinder,.175);
             Turn(.125, 90, true, "clockwise");
