@@ -65,6 +65,7 @@ public abstract class LinearHardwareMap extends LinearOpMode {
     public CRServo CapBallarm2;
     public Servo BallControl;
     public DeviceInterfaceModule DIM;
+    
     public String frontLeftMotor = "fl"; //VTOJ Port 1
     public String frontRightMotor = "fr"; // VTOJ Port 2
     public String backLeftMotor = "bl"; //VTOL Port 1
@@ -468,6 +469,28 @@ SetMode(RUN_WITH_ENCODER);
         ButtonPusher.setPosition((buttonPusherLeft + buttonPusherRight) / 2);
         ButtonPusherArm.setPosition(buttonPusherStow);
 
+
+    }
+    public double PidPowerAdjustment(int TargetAngle) {
+
+        float LinearCumulativeerror = 0;
+        float LinearproportionalCorrection;
+        float LinearintegralCorrection;
+        float LinearSlopeofderivitive;
+        float LinearMaxCorrection = 100;
+        float LinearMinCorrection = 15;
+        float Linearerror = Math.abs(TargetAngle - getIntegratedZValue());
+        LinearproportionalCorrection = (LinearproportionalConstant * Linearerror);
+        LinearCumulativeerror += Linearerror;
+        LinearintegralCorrection = (LinearintegralConstant * LinearCumulativeerror);
+        LinearSlopeofderivitive = Linearerror - Linearlasterror;
+        float Linearderivitivecorrection = (LinearSlopeofderivitive * LinearderivitiveConstant);
+
+
+        float LinearCorrection = LinearproportionalCorrection + LinearintegralCorrection + Linearderivitivecorrection;
+
+      
+        return Range.clip(LinearCorrection,LinearMinCorrection,LinearmaxCorrection;
 
     }
 
