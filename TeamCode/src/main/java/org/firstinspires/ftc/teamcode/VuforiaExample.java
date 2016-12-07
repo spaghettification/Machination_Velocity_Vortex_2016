@@ -14,7 +14,7 @@ public class BlueParametricButtonPusher extends LinearHardwareMap {
         Calibrate();
         Gyro.calibrate();
         double WhiteLineLocation = 60;
-        double CoordianteTarget[] = {1,2};
+        double CoordianteTarget[] = {12,55};
         double OriginalPlacement = FrontRangeSensor.getDistance(DistanceUnit.INCH);
         double ParametricPathXTravel = OriginalPlacement - CoordianteTarget[0];
         double ParametricPathYTravel = WhiteLineLocation-CoordianteTarget[1];
