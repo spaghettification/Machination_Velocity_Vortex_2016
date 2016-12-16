@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.RobotLog;
 import com.vuforia.HINT;
 import com.vuforia.Vuforia;
 
@@ -32,102 +33,92 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import java.sql.Ref;
+import java.util.Set;
+
 /**
  * Created by Trevor on 11/5/2016.
  */
 public abstract class LinearHardwareMap extends LinearOpMode {
-    public double                                                   DriveStraightConstant=.8;
-    public DcMotor                                                  FrontLeft;
-    public DcMotor                                                  FrontRight;
-    public DcMotor                                                  BackLeft;
-    public DcMotor                                                  BackRight;
-    public DcMotor                                                  Catapult;
-    public DcMotor                                                  BallCollection;
-    public DcMotor                                                  CapBallLiftLeft;
-    public DcMotor                                                  CapBallLiftRight;
-    public GyroSensor                                               Gyro;
-    public ColorSensor                                              BeaconColorSensor;
-    public OpticalDistanceSensor                                    WhiteLineFinder;
-    public ModernRoboticsI2cRangeSensor                             SideRangeSensor;
-    public ModernRoboticsI2cRangeSensor                             FrontRangeSensor;
-    public ModernRoboticsI2cRangeSensor                             BackRangeSensor;
-    public TouchSensor                                              CatapultStop;
-    public Servo                                                    ButtonPusherArm;
-    public Servo                                                    ButtonPusher;
-    public Servo                                                    CapBallFork;
-    public Servo                                                    servo6;
-    public Servo                                                    servo7;
-    public Servo                                                    servo8;
-    public Servo                                                    servo9;
-    public Servo                                                    servo10;
-    public Servo                                                    servo11;
-    public Servo                                                    servo12;
-    public CRServo                                                  CapBallarm1;
-    public CRServo                                                  CapBallarm2;
-    public Servo                                                    BallControl;
-    public DeviceInterfaceModule                                    DIM;
+    public DcMotor                                              FrontLeft;
+    public DcMotor                                              FrontRight;
+    public DcMotor                                              BackLeft;
+    public DcMotor                                              BackRight;
+    public DcMotor                                              Catapult;
+    public DcMotor                                              BallCollection;
+    public DcMotor                                              CapBallLiftLeft;
+    public DcMotor                                              ButtonPusherActuator;
+    public GyroSensor                                           Gyro;
+    public ColorSensor                                          BeaconColorSensor;
+    public OpticalDistanceSensor                                LeftWhiteLineFinder;
+    public OpticalDistanceSensor                                RightWhiteLineFinder;
+    public ModernRoboticsI2cRangeSensor                         SideRangeSensor;
+    public ModernRoboticsI2cRangeSensor                         FrontRangeSensor;
+    public ModernRoboticsI2cRangeSensor                         BackRangeSensor;
+    public TouchSensor                                          CatapultStop;
+    public TouchSensor                                          ButtonPusherMax;
+    public TouchSensor                                          ButtonPusherMin;
+    public Servo                                                ButtonPusherArm;
+    public Servo                                                ButtonPusher;
+    public Servo                                                CapBallFork;
+    public Servo                                                servo6;
+    public Servo                                                servo7;
+    public Servo                                                servo8;
+    public Servo                                                servo9;
+    public Servo                                                servo10;
+    public Servo                                                servo11;
+    public Servo                                                servo12;
+    public CRServo                                              CapBallarm1;
+    public CRServo                                              CapBallarm2;
+    public Servo                                                BallControl;
+    public DeviceInterfaceModule                                DIM;
 
-    public String frontLeftMotor                                    = "fl"; //VTOJ Port 1
-    public String frontRightMotor                                   = "fr"; // VTOJ Port 2
-    public String backLeftMotor                                     = "bl"; //VTOL Port 1
-    public String backRightMotor                                    = "br";//VTOL Port 2
-    public String catapult                                          = "c"; // VTAV Port 1
-    public String ballCollection                                    = "bc"; //VTAV Port 2
-    public String capBallLiftLeft                                   = "cbll"; //SXSX
-    public String capBallLiftRight                                  = "cblr";   //SXSX
-    public String gyroSensor                                        = "gyro";
-    public String beaconColorSensor                                 = "bcs";
-    public String whiteLineFinder                                   = "wlf";
-    public String sideRangeSensor                                   = "brsrs";
-    public String frontRangeSensor                                  = "brrs";
-    public String backRangeSensor                                   = "blrs";
-    public String catapultStop                                      = "cs";
-    public String capBallFork                                       = "cbf";
-    public String capBallarm1                                       = "cba1";
-    public String capBallarm2                                       = "cba2";
-    public String ballControll                                      = "ballco";
-    public String buttonPusher                                      = "bp";
-    public String buttonPusherArm                                   = "bpa";
-    public double ballControlStartPosition                          = 1;
-    public double ballControlEngagedPosition                        = 0;
-    public double buttonPusherStow                                  = 0;
-    public double buttonPusherEngage                                = .3;
-    public double buttonPusherLeft                                  = 1;
-    public double buttonPusherRight                                 = .4;
-    public float LinearproportionalConstant                         = 0;
-    public float LinearintegralConstant                             = 0;
-    public float LinearderivitiveConstant                           = 0;
-    public float AngularproportionalConstant                        = 0;
-    public float AngularintegralConstant                            = 0;
-    public float AngularderivitiveConstant                          = 0;
-    public double AndyMarkMotor_TicksPerRevolution                  = 1120;
-    public double CountsPerInch                                     = 89;
-    public float AngularMaxCorrection                               = 100;
-    public float AngularMinCorrection                               = 15;
-    public float LinearMaxCorrection                                = 100;
-    public float LinearMinCorrection                                = 15;
-
-    public String Dim                                               = "DeviceInterfaceModule1";
+    public String frontLeftMotor                                =      "fl"; //VTOJ Port 1
+    public String frontRightMotor                               =      "fr"; // VTOJ Port 2
+    public String backLeftMotor                                 =      "bl"; //VTOL Port 1
+    public String backRightMotor                                =      "br";//VTOL Port 2
+    public String catapult                                      =      "c"; // VTAV Port 1
+    public String ballCollection                                =      "bc"; //VTAV Port 2
+    public String capBallLiftLeft                               =      "cbll"; //SXSX
+    public String buttonPusherActuator                          =      "bpa";   //SXSX
+    public String gyroSensor                                    =      "gyro";
+    public String beaconColorSensor                             =      "bcs";
+    public String LeftwhiteLineFinder                           =      "Lwlf";
+    public String RightwhiteLineFinder                          =      "Rwlf";
+    public String sideRangeSensor                               =      "brsrs";
+    public String frontRangeSensor                              =      "brrs";
+    public String backRangeSensor                               =      "blrs";
+    public String catapultStop                                  =      "cs";
+    public String capBallFork                                   =      "cbf";
+    public String capBallarm1                                   =      "cba1";
+    public String capBallarm2                                   =      "cba2";
+    public String ballControll                                  =      "ballco";
+    public String buttonPusher                                  =      "bp";
+    public String buttonPusherArm                               =      "bpa";
+    public double ballControlStartPosition                      =      .7;
+    public double ballControlEngagedPosition                    =       0;
+    public double buttonPusherLeft                              =       1;
+    public double buttonPusherRight                             =      .2;
+    public double buttonPusherCenter                            =      .6;
+    public float LinearproportionalConstant                     =       0;
+    public float LinearintegralConstant                         =       0;
+    public float LinearderivitiveConstant                       =       0;
+    public float AngularproportionalConstant                    =       0;
+    public float AngularintegralConstant                        =       0;
+    public float AngularderivitiveConstant                      =       0;
+    public double AndyMarkMotor_TicksPerRevolution              =       1120;
+    public double CountsPerInch                                 =       89;
+    public float AngularMaxCorrection                           =       100;
+    public float AngularMinCorrection                           =       15;
+    public float LinearMaxCorrection                            =       100;
+    public float LinearMinCorrection                            =       15;
 
 
-    public VuforiaLocalizer                                         vuforiaLocalizer;
-    public VuforiaLocalizer.Parameters                              parameters;
-    public VuforiaTrackables                                        visionTargets;
-
-    public VuforiaTrackableDefaultListener                          Wheelslistener;
-    public VuforiaTrackableDefaultListener                          Gearslistener;
-    public VuforiaTrackableDefaultListener                          Toolslistener;
-    public VuforiaTrackableDefaultListener                          Legoslistener;
-
-    private VuforiaTrackable                                        Wheels;
-    private VuforiaTrackable                                        Gears;
-    private VuforiaTrackable                                        Tools;
-    private VuforiaTrackable                                        Legos;
-    public OpenGLMatrix                                             lastKnownLocation;
-    public OpenGLMatrix                                             phoneLocation;
-    float mmPerInch                                                 = 25.4f;
-    double TurningConstant                                          =.0125;
-    String VuforiaLicenseKey                                        = "AbkJpf//////AAAAGfwmmKkkGUDwrRcXe4puyLQhZ3m1wmsmuJUw2GVDtb7tWinUTnSd+UmyGz5aylC8ShWX8ayvA9h2mDtWnM1s3yni7S/WtH8buZO7gUBz9FotxNPJGL8Di9VJSmOhzEoyHLivQpx/vPwoH0Aejcvr1lBt8b5yMEgegLQ+WbmwNmj25ciaaMFDhryp7CTOzZFswvIUdhZ84PBJJew94ewMFjrsGNqra+0beno8wvEH9XmHp2kj9lVT+u8EjZdSQuEowkS5Lw2bnmOCMfPk9/00KZ+xBfaa2LDB3IXuYR2FVdd6qORTWXA8N120mYbCx8x8U7R4JdZs/eAH279CtHqFyFPdQtj3qn3Of7Z3urbcezNu";
+    double TurningConstant=.0125;
+    String VuforiaLicenseKey = "AbkJpf//////AAAAGfwmmKkkGUDwrRcXe4puyLQhZ3m1wmsmuJUw2GVDtb7tWinUTnSd+UmyGz5aylC8ShWX8ayvA9h2mDtWnM1s3yni7S/WtH8buZO7gUBz9FotxNPJGL8Di9VJSmOhzEoyHLivQpx/vPwoH0Aejcvr1lBt8b5yMEgegLQ+WbmwNmj25ciaaMFDhryp7CTOzZFswvIUdhZ84PBJJew94ewMFjrsGNqra+0beno8wvEH9XmHp2kj9lVT+u8EjZdSQuEowkS5Lw2bnmOCMfPk9/00KZ+xBfaa2LDB3IXuYR2FVdd6qORTWXA8N120mYbCx8x8U7R4JdZs/eAH279CtHqFyFPdQtj3qn3Of7Z3urbcezNu";
+    float Linearlasterror=0;
+    ElapsedTime runtime = new ElapsedTime();
+    ElapsedTime Totalruntime = new ElapsedTime();
 
     public int getIntegratedZValue() {// Fixes the problematic wrap around from 0 to 359.
         int heading = Gyro.getHeading();
@@ -156,19 +147,84 @@ public abstract class LinearHardwareMap extends LinearOpMode {
         if (BallCollection != null) {
             BallCollection.setPower(0);
         }
-        if (CapBallLiftRight != null) {
-            CapBallLiftRight.setPower(0);
+        if (ButtonPusherActuator != null) {
+            ButtonPusherActuator.setPower(0);
         }
         if (CapBallLiftLeft != null) {
             CapBallLiftLeft.setPower(0);
         }
     }
-
-    public void Calibrate() {
-        if (Gyro != null) {
-            Gyro.calibrate();
-        }
+    public void PrepareAutonomous(){
+        AutonomousHardwareMap();
+        StopAllMotors();
+        InitializeServoPositions();
+        Gyro.calibrate();
         SetMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        waitForStart();
+        while(Gyro.isCalibrating()){
+
+        }
+    }
+    public void DriveToFirstBeacon(String Color){
+        if (Color.toLowerCase()=="blue"){
+        Turn(.25,0,25,true);
+        DriveWithPID(.375,48,25,3000);
+        Turn(0,.25,0,true);
+        FindWhiteLine(LeftWhiteLineFinder,RightWhiteLineFinder,.125,.6);}
+        else{
+            Turn(0,.25,-25,true);
+            DriveWithPID(.375,-48,-25,3000);
+            Turn(.25,0,0,true);
+            FindWhiteLine(LeftWhiteLineFinder,RightWhiteLineFinder,-.125,.6);}
+    }
+    public void DriveFromFirstBeaconToSecondBeacon(String Color){
+        if (Color.toLowerCase()=="blue"){
+        DriveWithPID(.375,40,0,2500);
+        FindWhiteLine(LeftWhiteLineFinder,RightWhiteLineFinder,.125,.6);}
+        else{
+            DriveWithPID(.375,-40,0,2500);
+            FindWhiteLine(LeftWhiteLineFinder,RightWhiteLineFinder,-.125,.6);}
+    }
+    public void DriveFromSecondButtonToShootSpot(String Color){
+        if (Color.toLowerCase()=="blue"){
+        Turn(0,.25,-150,true);
+        DriveWithPID(.375,24,-150,3000);}
+        else{Turn(.25,0,150,true);
+            DriveWithPID(.375,24,150,3000);}
+    }
+
+    public void DriveFromShootSpotToCapBallStand(String Color){
+        if (Color.toLowerCase()=="blue"){
+        DriveWithPID(.375,30,25,3000);
+        }
+        else{DriveWithPID(.375,-30,-25,3000);}
+    }
+
+    public double PidPowerAdjustment(int TargetAngle) {
+
+        float LinearCumulativeerror = 0;
+        float LinearproportionalCorrection;
+        float LinearintegralCorrection;
+        float LinearSlopeofderivitive;
+        float LinearMaxCorrection = 100;
+        float LinearMinCorrection = 15;
+        float Linearerror = Math.abs(TargetAngle - getIntegratedZValue());
+        LinearproportionalCorrection = (LinearproportionalConstant * Linearerror);
+        LinearCumulativeerror += Linearerror;
+        LinearintegralCorrection = (LinearintegralConstant * LinearCumulativeerror);
+        LinearSlopeofderivitive = Linearerror - Linearlasterror;
+        float Linearderivitivecorrection = (LinearSlopeofderivitive * LinearderivitiveConstant);
+
+
+        float LinearCorrection = LinearproportionalCorrection + LinearintegralCorrection + Linearderivitivecorrection;
+
+        if (LinearCorrection > LinearMaxCorrection) {
+            LinearCorrection = LinearMaxCorrection;
+        } else if (LinearCorrection < LinearMinCorrection) {
+            LinearCorrection = LinearMinCorrection;
+        } else LinearCorrection = LinearCorrection;
+        return LinearCorrection;
+
     }
 
     public void AutonomousHardwareMap() {
@@ -178,13 +234,13 @@ public abstract class LinearHardwareMap extends LinearOpMode {
         BackRight = hardwareMap.dcMotor.get(backRightMotor);
 
         FrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-
         BackRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         Catapult = hardwareMap.dcMotor.get(catapult);
         BallCollection = hardwareMap.dcMotor.get(ballCollection);
         CapBallLiftLeft = hardwareMap.dcMotor.get(capBallLiftLeft);
-        CapBallLiftRight = hardwareMap.dcMotor.get(capBallLiftRight);
+        ButtonPusherActuator = hardwareMap.dcMotor.get(buttonPusherActuator);
+        ButtonPusherActuator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         CatapultStop = hardwareMap.touchSensor.get(catapultStop);
 
@@ -203,10 +259,9 @@ public abstract class LinearHardwareMap extends LinearOpMode {
         Gyro = hardwareMap.gyroSensor.get(gyroSensor);
 
         BeaconColorSensor = hardwareMap.colorSensor.get(beaconColorSensor);
-        WhiteLineFinder = hardwareMap.opticalDistanceSensor.get(whiteLineFinder);
-        BeaconColorSensor.setI2cAddress(I2cAddr.create7bit(0x1e));
+        LeftWhiteLineFinder = hardwareMap.opticalDistanceSensor.get(LeftwhiteLineFinder);
+        RightWhiteLineFinder=hardwareMap.opticalDistanceSensor.get(RightwhiteLineFinder);
         BeaconColorSensor.enableLed(false);
-        WhiteLineFinder.enableLed(true);
 
     }
 
@@ -214,15 +269,11 @@ public abstract class LinearHardwareMap extends LinearOpMode {
         if (BallControl != null) {
             BallControl.setPosition(ballControlStartPosition);
         }
-        if (ButtonPusherArm != null) {
-            ButtonPusherArm.setPosition(buttonPusherStow);
-        }
         if (ButtonPusher != null) {
             ButtonPusher.setPosition(buttonPusherLeft);
         }
 
     }
-
 
     public void setPower(double FL, double FR, double BL, double BR, double Constant) {
         FrontLeft.setPower(FL);
@@ -230,6 +281,7 @@ public abstract class LinearHardwareMap extends LinearOpMode {
         BackLeft.setPower(BL);
         BackRight.setPower(BR*Constant);
     }
+
     public void setPower(double FL, double FR, double BL, double BR) {
         FrontLeft.setPower(FL);
         FrontRight.setPower(FR);
@@ -250,11 +302,74 @@ public abstract class LinearHardwareMap extends LinearOpMode {
         BackLeft.setMaxSpeed(TicksPerSecond);
         BackRight.setMaxSpeed(TicksPerSecond);
     }
-    public void setMaxSpeed(int TicksPerSecond, double Constant) {
-        FrontLeft.setMaxSpeed(TicksPerSecond);
-        FrontRight.setMaxSpeed((int) (TicksPerSecond*Constant));
-        BackLeft.setMaxSpeed(TicksPerSecond);
-        BackRight.setMaxSpeed((int) (TicksPerSecond*Constant));
+
+    public void setMaxSpeed(int TicksPerSecond, double LeftConstant, double RightConstant) {
+        FrontLeft.setMaxSpeed((int) Math.abs(TicksPerSecond+(TicksPerSecond*LeftConstant)));
+        FrontRight.setMaxSpeed((int) Math.abs(TicksPerSecond+(TicksPerSecond*RightConstant)));
+        BackLeft.setMaxSpeed((int) Math.abs(TicksPerSecond+(TicksPerSecond*LeftConstant)));
+        BackRight.setMaxSpeed((int) Math.abs(TicksPerSecond+(TicksPerSecond*RightConstant)));
+    }
+
+    public void DriveWithPID(double minPower,double Distance, int TargetAngle, int MaxSpeed){
+        double Tolerance = 0;
+        SetMode(DcMotor.RunMode.RUN_TO_POSITION);
+        sleep(50);
+        LinearproportionalConstant = (float) 0;
+        LinearintegralConstant= (float) 0;
+        LinearderivitiveConstant = (float) 0;
+        double EncoderTicks=CountsPerInch*Distance;
+
+        setPower(minPower,minPower,minPower,minPower);
+
+        setMaxSpeed(MaxSpeed);
+
+        FrontLeft.setTargetPosition((int) (FrontLeft.getCurrentPosition() + EncoderTicks));
+        FrontRight.setTargetPosition((int) (FrontRight.getCurrentPosition() + EncoderTicks));
+        BackLeft.setTargetPosition((int) (BackLeft.getCurrentPosition() + EncoderTicks));
+        BackRight.setTargetPosition((int) (BackRight.getCurrentPosition()+ EncoderTicks));
+
+        setPower(minPower,minPower,minPower,minPower);
+
+        setMaxSpeed(MaxSpeed);
+
+        while(FrontLeft.isBusy()&&FrontRight.isBusy()&&BackLeft.isBusy()&&BackRight.isBusy()&&opModeIsActive()) {
+
+            if (TargetAngle - getIntegratedZValue() > Tolerance) {//Angled to the left of where it should be, Left Power must be increased
+
+                setPower(minPower+(FrontLeft.getPower()+PidPowerAdjustment(TargetAngle)),minPower-(FrontRight.getPower()*PidPowerAdjustment(TargetAngle)),minPower+(BackLeft.getPower()*PidPowerAdjustment(TargetAngle)),minPower-(BackRight.getPower()*PidPowerAdjustment(TargetAngle)));
+                setMaxSpeed(MaxSpeed,PidPowerAdjustment(TargetAngle),-PidPowerAdjustment(TargetAngle));
+
+            } else if (TargetAngle - getIntegratedZValue() < Tolerance) {//Angled to the right of where it should be,Right Power must be increased
+
+                setPower(minPower-(FrontLeft.getPower()*PidPowerAdjustment(TargetAngle)),minPower+(FrontRight.getPower()*PidPowerAdjustment(TargetAngle)),minPower-(BackLeft.getPower()*PidPowerAdjustment(TargetAngle)),minPower+(BackRight.getPower()*PidPowerAdjustment(TargetAngle)));
+
+                setMaxSpeed(MaxSpeed,-PidPowerAdjustment(TargetAngle),+PidPowerAdjustment(TargetAngle));
+
+            } else {//Robot is at the angle it should be
+            }
+            telemetry.addData("Current Time", Totalruntime.seconds());
+            telemetry.addData("Current Heading", getIntegratedZValue());
+            telemetry.addData("Current Adjustment", PidPowerAdjustment(TargetAngle));
+            telemetry.addData("Current Proportional Constant", LinearproportionalConstant);
+            telemetry.addData("Current Integral Constant", LinearintegralConstant);
+            telemetry.addData("Current Derivitive Constant", LinearderivitiveConstant);
+            telemetry.addData("Front Left Power",FrontLeft.getPower());
+            telemetry.addData("Front Right Power",FrontRight.getPower());
+            telemetry.addData("Back Left Power",BackLeft.getPower());
+            telemetry.addData("Back Right Power",BackRight.getPower());
+            RobotLog.i("Current Time", Totalruntime.seconds());
+            RobotLog.i("Current Heading", getIntegratedZValue());
+            RobotLog.i("Current Adjustment", PidPowerAdjustment(TargetAngle));
+            RobotLog.i("Current Proportional Constant", LinearproportionalConstant);
+            RobotLog.i("Current Integral Constant", LinearintegralConstant);
+            RobotLog.i("Current Derivitive Constant", LinearderivitiveConstant);
+            RobotLog.i("Front Left Power",FrontLeft.getPower());
+            RobotLog.i("Front Right Power",FrontRight.getPower());
+            RobotLog.i("Back Left Power",BackLeft.getPower());
+            RobotLog.i("Back Right Power",BackRight.getPower());
+            telemetry.update();
+
+        }
     }
 
     public void Drive(double minPower, double Distance, int TargetAngle, double TimeOut, boolean PIDdesired) {
@@ -267,13 +382,15 @@ public abstract class LinearHardwareMap extends LinearOpMode {
         SetMode(DcMotor.RunMode.RUN_TO_POSITION);
         sleep(50);
         double EncoderTicks = CountsPerInch * Distance;
+        double difference =TargetAngle- getIntegratedZValue();
+        double adjustment = difference*.07;
         FrontLeft.setTargetPosition((int) (FrontLeft.getCurrentPosition() + EncoderTicks));
         FrontRight.setTargetPosition((int) (FrontRight.getTargetPosition() + EncoderTicks));
         BackLeft.setTargetPosition((int) (BackLeft.getCurrentPosition() + EncoderTicks));
         BackRight.setTargetPosition((int) (BackRight.getTargetPosition() + EncoderTicks));
         //SetMode(DcMotor.RunMode.RUN_TO_POSITION);
         setPower(minPower,minPower,minPower,minPower,.8);
-        setMaxSpeed(2500,.8);
+        setMaxSpeed(2500);
 
         while ((opModeIsActive()&&!isStopRequested()&&
                 FrontLeft.isBusy() &&
@@ -281,6 +398,8 @@ public abstract class LinearHardwareMap extends LinearOpMode {
                 BackLeft.isBusy() &&
                 BackRight.isBusy()
                 ) {
+
+            setPower(minPower+adjustment,minPower-adjustment,minPower+adjustment,minPower-adjustment);
             telemetry.addData("FL", FrontLeft.getCurrentPosition());
             telemetry.addData("FR", FrontRight.getCurrentPosition());
             telemetry.addData("BL", BackLeft.getCurrentPosition());
@@ -331,16 +450,16 @@ public abstract class LinearHardwareMap extends LinearOpMode {
                 if (Direction == "clockwise"){
 
                     FrontLeftTurnPower = 0;
-                    FrontRightTurnPower =Power ;
-                    BackLeftTurnPower = 0;
-                    BackRightTurnPower =Power;
+                    FrontRightTurnPower =-Power ;
+                    BackLeftTurnPower =0;
+                    BackRightTurnPower =-Power;
                     }
 
                 if (Direction =="counterclockwise"){
-                    FrontLeftTurnPower = 0;
-                    FrontRightTurnPower = -Power;
-                    BackLeftTurnPower = 0;
-                    BackRightTurnPower = -Power;}
+                    FrontLeftTurnPower = -Power;
+                    FrontRightTurnPower = Power;
+                    BackLeftTurnPower = -Power;
+                    BackRightTurnPower = Power;}
 
 
             }
@@ -370,154 +489,87 @@ public abstract class LinearHardwareMap extends LinearOpMode {
     }
 
     public void DriveToWall(int Distance,double Power) {
-        SetMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        while (opModeIsActive()&&FrontRangeSensor.getDistance(DistanceUnit.INCH) > Distance) {
-            setPower(Power, Power, Power, Power,DriveStraightConstant);
-            setMaxSpeed(2000,DriveStraightConstant);
+        while (FrontRangeSensor.getDistance(DistanceUnit.INCH) > Distance) {
+            setPower(Power, Power, Power, Power,.8);
         }
-        setPower(0, 0, 0, 0,DriveStraightConstant);
+        setPower(0, 0, 0, 0);
     }
 
-    ElapsedTime runtime = new ElapsedTime();
-    public void FindWhiteLine(OpticalDistanceSensor colorSensor,double Power) {
-            SetMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    public void FindWhiteLine(OpticalDistanceSensor LeftODS,OpticalDistanceSensor RightODS,double Power,double Reflectance) {
+        SetMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        double LeftPower;
+        double RightPower;
         runtime.reset();
-        while (opModeIsActive()&&colorSensor.getLightDetected()>.9) {
-            if (runtime.seconds()>1.5){
-                setPower(-Power, -Power, -Power, -Power,DriveStraightConstant);
-                setMaxSpeed(2000,DriveStraightConstant);}
-            else {setPower(Power, Power, Power, Power,DriveStraightConstant);
-            setMaxSpeed(2000,DriveStraightConstant);}
+        while (opModeIsActive()&&!isStopRequested()&&LeftODS.getLightDetected()<.6&&RightODS.getLightDetected()>.6) {
+            if(runtime.seconds()>1.5){
+                if (LeftODS.getLightDetected()<Reflectance){LeftPower=Power;}else{LeftPower=0;}
+                if (RightODS.getLightDetected()<Reflectance){RightPower=Power;}else{RightPower=0;}
+                setPower(-LeftPower, -RightPower, -LeftPower, -RightPower,.8);
+            }
+            else{
+                if (LeftODS.getLightDetected()<Reflectance){LeftPower=Power;}else{LeftPower=0;}
+                if (RightODS.getLightDetected()<Reflectance){RightPower=Power;}else{RightPower=0;}
+                setPower(LeftPower, RightPower, LeftPower, RightPower,.8);
+            }
         }
+        Gyro.resetZAxisIntegrator();
         setPower(0,0,0,0);
     }
 
-    public void ButtonPush(String Color) {
-        if (Color.toLowerCase() == "blue") {
-            FindWhiteLine(WhiteLineFinder,.25);
-            Turn(.125, 90, true,"Clockwise");
-            DriveToWall(4,.25);
-            if (BeaconColorSensor.blue() > BeaconColorSensor.red() && BeaconColorSensor.blue() > BeaconColorSensor.green()) {
-                Drive(.25, -3, getIntegratedZValue(), 2, false);
-                //ButtonPusher.setPosition((buttonPusherLeft + buttonPusherRight) / 2);sleep(500);
-                ButtonPusherArm.setPosition(buttonPusherEngage);sleep(500);
-                ButtonPusher.setPosition(buttonPusherLeft);sleep(500);
-                ButtonPusherArm.setPosition(buttonPusherStow);sleep(500);
-                DriveToWall(3,.25);
 
 
-            } else if (BeaconColorSensor.red() > BeaconColorSensor.blue() && BeaconColorSensor.red() > BeaconColorSensor.green()) {
-                Drive(.25, -3, getIntegratedZValue(), 2, false);
-                //ButtonPusher.setPosition((buttonPusherLeft + buttonPusherRight) / 2);sleep(500);
-                ButtonPusherArm.setPosition(buttonPusherEngage);sleep(500);
-                ButtonPusher.setPosition(buttonPusherRight);sleep(500);
-                ButtonPusherArm.setPosition(buttonPusherStow);sleep(500);
-                DriveToWall(3,.25);
-            } else {
-                telemetry.addData(">", "Color Sensor Did not Find The Beacon");
-                telemetry.update();
-                requestOpModeStop();
-            }
-        } else {
-            FindWhiteLine(WhiteLineFinder,.25);
-            Turn(.125, -90, true,"CounterClockwise");
-            sleep(300);
-            DriveToWall(4,.25);
-            setPower(0, 0, 0, 0);
-            if (BeaconColorSensor.red() > BeaconColorSensor.blue() && BeaconColorSensor.red() > BeaconColorSensor.green()) {
-                Drive(.25, -3, getIntegratedZValue(), 2, false);
-                ButtonPusher.setPosition((buttonPusherLeft + buttonPusherRight) / 2);
-                ButtonPusherArm.setPosition(buttonPusherEngage);
-                ButtonPusher.setPosition(buttonPusherLeft);
-                DriveToWall(2,.25);
-            } else if (BeaconColorSensor.blue() > BeaconColorSensor.red() && BeaconColorSensor.blue() > BeaconColorSensor.green()) {
-                Drive(.25, -3, getIntegratedZValue(), 2, false);
-                ButtonPusher.setPosition((buttonPusherLeft + buttonPusherRight) / 2);
-                ButtonPusherArm.setPosition(buttonPusherEngage);
-                ButtonPusher.setPosition(buttonPusherRight);
-                DriveToWall(2,.25);
-            } else {
-                telemetry.addData(">", "Color Sensor Did not Find The Beacon");
-                requestOpModeStop();
-            }
-        }
-        ButtonPusher.setPosition((buttonPusherLeft + buttonPusherRight) / 2);
-        ButtonPusherArm.setPosition(buttonPusherStow);
-
-
-    }
-    float Linearlasterror = 0;
-    public double PidPowerAdjustment(int TargetAngle) {
-
-        float LinearCumulativeerror = 0;
-        float LinearproportionalCorrection;
-        float LinearintegralCorrection;
-        float LinearSlopeofderivitive;
-        float LinearMaxCorrection = 100;
-        float LinearMinCorrection = 15;
-        float Linearerror = Math.abs(TargetAngle - getIntegratedZValue());
-        LinearproportionalCorrection = (LinearproportionalConstant * Linearerror);
-        LinearCumulativeerror += Linearerror;
-        LinearintegralCorrection = (LinearintegralConstant * LinearCumulativeerror);
-        LinearSlopeofderivitive = Linearerror - Linearlasterror;
-        float Linearderivitivecorrection = (LinearSlopeofderivitive * LinearderivitiveConstant);
-        float LinearCorrection = LinearproportionalCorrection + LinearintegralCorrection + Linearderivitivecorrection;
-        return Range.clip(LinearCorrection,LinearMinCorrection,LinearMaxCorrection);
-
-    }
-    public void SetPowerwithPIDAdjustment(double minPower, int TargetAngle, boolean PIDdesired) {
-        double FrontLeftDynamicPower;
-        double FrontRightDynamicPower;
-        double BackLeftDynamicPower;
-        double BackRightDynamicPower;
-        int AngleToMaintain = TargetAngle;
-        if (getIntegratedZValue() > TargetAngle && PIDdesired) {//VeeringRight
-
-            FrontLeftDynamicPower = Range.clip(minPower - PidPowerAdjustment(AngleToMaintain), 0, 1);
-            FrontRightDynamicPower = Range.clip(minPower + PidPowerAdjustment(AngleToMaintain), 0, 1);
-            BackLeftDynamicPower = Range.clip(minPower - PidPowerAdjustment(AngleToMaintain), 0, 1);
-            BackRightDynamicPower = Range.clip(minPower + PidPowerAdjustment(AngleToMaintain), 0, 1);
-
-        } else if (getIntegratedZValue() < TargetAngle && PIDdesired) {//VeeringLeft
-
-            FrontLeftDynamicPower = Range.clip(minPower + PidPowerAdjustment(AngleToMaintain), 0, 1);
-            FrontRightDynamicPower = Range.clip(minPower - PidPowerAdjustment(AngleToMaintain), 0, 1);
-            BackLeftDynamicPower = Range.clip(minPower + PidPowerAdjustment(AngleToMaintain), 0, 1);
-            BackRightDynamicPower = Range.clip(minPower - PidPowerAdjustment(AngleToMaintain), 0, 1);
-        } else {
-
-            FrontLeftDynamicPower = Range.clip(minPower, 0, 1);
-            FrontRightDynamicPower = Range.clip(minPower, 0, 1);
-            BackLeftDynamicPower = Range.clip(minPower, 0, 1);
-            BackRightDynamicPower = Range.clip(minPower, 0, 1);
-        }
-
-        setPower(FrontLeftDynamicPower, FrontRightDynamicPower, BackLeftDynamicPower, BackRightDynamicPower);
-    }
-
-
-    public void shootParticle(int Quantity) {
-
-        while (!CatapultStop.isPressed()){
-            Catapult.setPower(1);
-        }Catapult.setPower(0);
+    public void AutonomousButtonPush(String Color) {
+        while(!ButtonPusherMax.isPressed()){ButtonPusherActuator.setPower(.5);
+            if (!ButtonPusherMin.isPressed()){
+            ButtonPusher.setPosition(buttonPusherCenter);}}
+        ButtonPusherActuator.setPower(0);
         sleep(500);
-        while(CatapultStop.isPressed()){
-            Catapult.setPower(1);
-        }Catapult.setPower(0);
-        sleep(200);
-        if (Quantity>1){
-        while (!CatapultStop.isPressed()){
-            Catapult.setPower(1);
-        }Catapult.setPower(0);
-        BallControl.setPosition(1);
-        sleep(1000);
-        BallControl.setPosition(0);
-        while (CatapultStop.isPressed()){
-            Catapult.setPower(1);
-        }Catapult.setPower(0);}
+        if( Color.toLowerCase()=="red"){
+            if (BeaconColorSensor.red()>BeaconColorSensor.blue()){
+            ButtonPusher.setPosition(buttonPusherLeft);}
+            else if (BeaconColorSensor.blue()>BeaconColorSensor.red()){
+                ButtonPusher.setPosition(buttonPusherRight);}
+            else {
+                RobotLog.a("Beacon Color Not Found");
+            }
+        }
+        if (Color.toLowerCase()=="blue"){
+            if (BeaconColorSensor.blue()>BeaconColorSensor.red()){
+            ButtonPusher.setPosition(buttonPusherLeft);}
+        else if (BeaconColorSensor.red()>BeaconColorSensor.blue()){
+            ButtonPusher.setPosition(buttonPusherRight);}
+        else {
+            RobotLog.a("Beacon Color Not Found");
+        }}
+        sleep(300);
+        while(!ButtonPusherMin.isPressed()){
+            ButtonPusherActuator.setPower(-.5);
+        }ButtonPusherActuator.setPower(0);
+
+    }
+
+    public void AutonomousBallShoot(){
+        while (!CatapultStop.isPressed()){Catapult.setPower(1);}Catapult.setPower(0);
+        while (CatapultStop.isPressed()){Catapult.setPower(1);}Catapult.setPower(0);
+        while (!CatapultStop.isPressed()){Catapult.setPower(1);}Catapult.setPower(0);
+    }
+    public void AutonomousShoot2Balls(){
+        if (opModeIsActive()){
+            BallControl.setPosition(ballControlStartPosition);
+            AutonomousBallShoot();
+            BallCollection.setPower(.5);
+            BallControl.setPosition(ballControlEngagedPosition);
+            sleep(2000);
+            BallControl.setPosition(ballControlStartPosition);
+            AutonomousBallShoot();
 
         }
+    }
+
+}
+
+
+    /*
 
     public void InitializeVuforia(){
         parameters=new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
@@ -606,9 +658,6 @@ public abstract class LinearHardwareMap extends LinearOpMode {
 
     public void VuforiaTelemetry(){
         telemetry.addData("Tracking"+Wheels.getName(),Wheelslistener.isVisible());
-        telemetry.addData("Tracking"+Gears.getName(),Gearslistener.isVisible());
-        telemetry.addData("Tracking"+Tools.getName(),Toolslistener.isVisible());
-        telemetry.addData("Tracking"+Legos.getName(),Legoslistener.isVisible());
         telemetry.addData("Last Known Loacation", formatMatrix(lastKnownLocation));
         telemetry.update();
     }
@@ -620,7 +669,7 @@ public abstract class LinearHardwareMap extends LinearOpMode {
     }
     public String formatMatrix(OpenGLMatrix matrix){
         return matrix.formatAsTransform();
-    }}
+    }*/
 
 
 
